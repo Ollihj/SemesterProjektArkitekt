@@ -1,0 +1,31 @@
+@inherits LayoutComponentBase
+@using Core.Models
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if (currentUser != null)
+            {
+                <span>Logget ind som: <strong>@currentUser.Navn</strong></span>
+            }
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code {
+    private Bruger? currentUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = await LocalStorage.GetItemAsync<Bruger>("bruger");
+    }
+}

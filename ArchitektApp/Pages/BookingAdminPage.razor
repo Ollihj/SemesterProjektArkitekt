@@ -1,0 +1,17 @@
+@page "/admin/bookinger"
+@using Core.Models
+@using ArchitektApp.Service
+@inject IBookingService BookingService
+
+<PageTitle>Håndter bookingforespørgsler</PageTitle>
+
+<h2>Bookingforespørgsler</h2>
+
+@code {
+    private List<Booking> bookinger = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        bookinger = await BookingService.GetAll();
+    }
+}

@@ -1,0 +1,20 @@
+@page "/kalender"
+@using Core.Models
+@using ArchitektApp.Service
+@inject IAftaleService AftaleService
+@inject IBlokeretService BlokeretService
+
+<PageTitle>Kalender & Dashboard</PageTitle>
+
+<h2>Kalender og Dashboard</h2>
+
+@code {
+    private List<Aftale> aftaler = new();
+    private List<Blokeret> blokeringer = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        aftaler = await AftaleService.GetAll();
+        blokeringer = await BlokeretService.GetAll();
+    }
+}

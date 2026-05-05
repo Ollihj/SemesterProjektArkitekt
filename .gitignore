@@ -1,0 +1,15 @@
+# Build output
+bin/
+obj/
+
+# IDE
+.idea/
+*.user
+*.suo
+
+# Sensitive config — put real connection strings in appsettings.Development.json locally
+appsettings.json
+
+# OS
+.DS_Store
+Thumbs.db

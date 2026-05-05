@@ -1,0 +1,17 @@
+@page "/portfolio"
+@using Core.Models
+@using ArchitektApp.Service
+@inject IProjektService ProjektService
+
+<PageTitle>Portfolio</PageTitle>
+
+<h2>Portfolio</h2>
+
+@code {
+    private List<Projekt> projekter = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        projekter = await ProjektService.GetAll();
+    }
+}

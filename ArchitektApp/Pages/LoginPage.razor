@@ -1,0 +1,29 @@
+@page "/login"
+@using ArchitektApp.Service
+@inject NavigationManager Navigation
+@inject LoginService LoginService
+@inject Blazored.LocalStorage.ILocalStorageService LocalStorage
+
+<PageTitle>Log ind</PageTitle>
+
+<h2>Log ind</h2>
+
+@code {
+    private string email = "";
+    private string password = "";
+    private string errorText = "";
+
+    private async Task OnClickLogin()
+    {
+        var bruger = await LoginService.ValidLogin(email, password);
+        if (bruger != null)
+        {
+            await LocalStorage.SetItemAsync("bruger", bruger);
+            Navigation.NavigateTo("/", true);
+        }
+        else
+        {
+            errorText = "Ugyldigt email eller adgangskode";
+        }
+    }
+}
