@@ -1,77 +1,79 @@
 @page "/booking"
 @using Core.Models
-@using Blazored.LocalStorage
 @inject NavigationManager Navigation
-@inject ILocalStorageService LocalStorage
+@inject HttpClient Http
 
 <div class="col-lg-7 offset-lg-5">
     <div class="booking-form-container">
-        <form>
+        <!-- @onsubmit kalder SendBooking metoden når formularen indsendes -->
+        <!-- @onsubmit:preventDefault forhindrer siden i at reloade ved submit -->
+        <form @onsubmit="SendBooking" @onsubmit:preventDefault>
+
             <!-- Navn -->
             <div class="form-group">
                 <label for="customerName">NAVN</label>
-                <input type="text" 
-                       class="form-control" 
-                       id="customerName" 
-                       name="customerName"
-                       placeholder="Dit fulde navn" 
+                <!-- @bind kobler input feltet til nyBooking.Kundenavn variablen -->
+                <input type="text"
+                       class="form-control"
+                       id="customerName"
+                       placeholder="Dit fulde navn"
+                       @bind="nyBooking.Kundenavn"
                        required />
             </div>
 
             <!-- Email -->
             <div class="form-group">
                 <label for="customerEmail">EMAIL</label>
-                <input type="email" 
-                       class="form-control" 
-                       id="customerEmail" 
-                       name="customerEmail"
-                       placeholder="din@email.dk" 
+                <!-- @bind kobler input feltet til nyBooking.Kundemail variablen -->
+                <input type="email"
+                       class="form-control"
+                       id="customerEmail"
+                       placeholder="din@email.dk"
+                       @bind="nyBooking.Kundemail"
                        required />
             </div>
 
             <!-- Telefon -->
             <div class="form-group">
                 <label for="customerPhone">TELEFON</label>
-                <input type="tel" 
-                       class="form-control" 
-                       id="customerPhone" 
-                       name="customerPhone"
-                       placeholder="+45" 
+                <!-- @bind kobler input feltet til nyBooking.KundeTlf variablen -->
+                <input type="tel"
+                       class="form-control"
+                       id="customerPhone"
+                       placeholder="+45"
+                       @bind="nyBooking.KundeTlf"
                        required />
             </div>
 
-            <!-- Dato og Tidspunkt -->
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="date">DATO</label>
-                        <input type="date" 
-                               class="form-control" 
-                               id="date" 
-                               name="date"
-                               required />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label for="time">TIDSPUNKT</label>
-                        <input type="time" 
-                               class="form-control" 
-                               id="time" 
-                               name="time"
-                               required />
-                    </div>
-                </div>
+            <!-- Dato -->
+            <div class="form-group">
+                <label for="date">DATO</label>
+                <input type="date"
+                       class="form-control"
+                       id="date"
+                       @bind="valgDato"
+                       required />
+            </div>
+
+            <!-- Tidspunkt -->
+            <div class="form-group">
+                <label for="time">TIDSPUNKT</label>
+                <input type="time"
+                       class="form-control"
+                       id="time"
+                       @bind="valgTid"
+                       required />
             </div>
 
             <!-- Beskrivelse -->
             <div class="form-group">
                 <label for="description">BESKRIVELSE</label>
-                <textarea class="form-control" 
-                          id="description" 
-                          name="description"
+                <!-- @bind kobler textarea til nyBooking.Beskrivelse variablen -->
+                <textarea class="form-control"
+                          id="description"
                           rows="5"
-                          placeholder="Fortæl os om dit projekt..." 
+                          placeholder="Fortæl os om dit projekt..."
+                          @bind="nyBooking.Beskrivelse"
                           required></textarea>
             </div>
 
@@ -79,10 +81,29 @@
             <button type="submit" class="btn btn-submit btn-block">
                 SEND FORESPØRGSEL
             </button>
+
         </form>
     </div>
 </div>
 
 @code {
-    
+    // Opretter et tomt Booking objekt som formularen udfylder
+    // Core.Models.Booking bruges her fordi Booking.razor selv hedder "Booking" og skaber navnekollision
+    private Core.Models.Booking nyBooking = new Core.Models.Booking();
+
+    // Separate variabler til dato og tidspunkt som sættes sammen inden afsendelse
+    private DateTime valgDato = DateTime.Today;
+    private TimeOnly valgTid = new TimeOnly(9, 0);
+
+    private async Task SendBooking()
+    {
+        // Sætter dato og tidspunkt sammen til ét DateTime felt
+        nyBooking.OensketDato = valgDato.Date + valgTid.ToTimeSpan();
+
+        // Sender bookingen til API'et som gemmer den i MongoDB
+        await Http.PostAsJsonAsync("api/booking", nyBooking);
+
+        // Sender brugeren tilbage til forsiden efter booking er sendt
+        Navigation.NavigateTo("/");
+    }
 }

@@ -9,5 +9,5 @@ public class Booking
     public string? KundeTlf { get; set; }
     public string? Beskrivelse { get; set; }
     public DateTime Oprettelse { get; set; }
-    public DateTime ØnsketDato { get; set; }
+    public DateTime OensketDato { get; set; }
 }
