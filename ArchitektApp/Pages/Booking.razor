@@ -1,0 +1,88 @@
+@page "/booking"
+@using Core.Models
+@using Blazored.LocalStorage
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
+
+<div class="col-lg-7 offset-lg-5">
+    <div class="booking-form-container">
+        <form>
+            <!-- Navn -->
+            <div class="form-group">
+                <label for="customerName">NAVN</label>
+                <input type="text" 
+                       class="form-control" 
+                       id="customerName" 
+                       name="customerName"
+                       placeholder="Dit fulde navn" 
+                       required />
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="customerEmail">EMAIL</label>
+                <input type="email" 
+                       class="form-control" 
+                       id="customerEmail" 
+                       name="customerEmail"
+                       placeholder="din@email.dk" 
+                       required />
+            </div>
+
+            <!-- Telefon -->
+            <div class="form-group">
+                <label for="customerPhone">TELEFON</label>
+                <input type="tel" 
+                       class="form-control" 
+                       id="customerPhone" 
+                       name="customerPhone"
+                       placeholder="+45" 
+                       required />
+            </div>
+
+            <!-- Dato og Tidspunkt -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="date">DATO</label>
+                        <input type="date" 
+                               class="form-control" 
+                               id="date" 
+                               name="date"
+                               required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="time">TIDSPUNKT</label>
+                        <input type="time" 
+                               class="form-control" 
+                               id="time" 
+                               name="time"
+                               required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Beskrivelse -->
+            <div class="form-group">
+                <label for="description">BESKRIVELSE</label>
+                <textarea class="form-control" 
+                          id="description" 
+                          name="description"
+                          rows="5"
+                          placeholder="Fortæl os om dit projekt..." 
+                          required></textarea>
+            </div>
+
+            <!-- Submit knap -->
+            <button type="submit" class="btn btn-submit btn-block">
+                SEND FORESPØRGSEL
+            </button>
+        </form>
+    </div>
+</div>
+
+@code {
+    
+}
