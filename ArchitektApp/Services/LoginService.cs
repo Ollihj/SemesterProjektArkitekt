@@ -16,11 +16,12 @@ public class LoginService
         _client = client;
     }
 
-    public async Task<Bruger?> ValidLogin(string name, string password)
+    public async Task<Bruger?> ValidLogin(string email, string password)
     {
         try
         {
-            var response = await _client.GetAsync($"{Config.ServerUrl}/api/bruger/login?navn={name}&password={password}");
+            // Sender POST request til login endpoint med email og password som query parametre
+            var response = await _client.PostAsync($"{Config.ServerUrl}/api/bruger/login?email={email}&password={password}", null);
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<Bruger>();
@@ -33,12 +34,13 @@ public class LoginService
         }
     }
 
-    public async Task<Bruger?> Register(string name, string password)
+    public async Task<Bruger?> Register(string navn, string email, string password)
     {
         try
         {
-            var newUser = new Bruger { Navn = name, Password = password, /*brugerID = Guid.NewGuid().ToString()*/ };
-            var response = await _client.PostAsJsonAsync($"{Config.ServerUrl}/api/bruger/register", newUser);
+            // Opretter en ny bruger og sender den til API'et
+            var newUser = new Bruger { Navn = navn, Email = email, Password = password };
+            var response = await _client.PostAsJsonAsync($"{Config.ServerUrl}/api/bruger", newUser);
             if (response.IsSuccessStatusCode)
             {
                 return await response.Content.ReadFromJsonAsync<Bruger>();

@@ -11,12 +11,12 @@
     <h2 style="text-align: center; margin-bottom: 30px;">Log ind</h2>
 
     <div class="form-group mb-3">
-        <label for="username">Brugernavn</label>
+        <label for="username">Email</label>
         <input id="username"
-               type="text"
+               type="email"
                class="form-control"
                @bind="username"
-               placeholder="Indtast brugernavn" />
+               placeholder="Indtast email" />
     </div>
 
     <div class="form-group mb-3">
@@ -40,9 +40,6 @@
         <a href="/" class="btn btn-secondary">Annuller</a>
     </div>
 
-    <div style="text-align: center; margin-top: 20px;">
-        <p><a href="/register">Opret bruger her</a></p>
-    </div>
 </div>
 
 @code {
@@ -60,7 +57,7 @@ return;
 }
 
 // 2. Try login with LoginService
-var user = await LoginService.ValidLogin(username, password);  // Changed this
+var user = await LoginService.ValidLogin(username, password);
 
 // 3. If success
 if (user != null)
