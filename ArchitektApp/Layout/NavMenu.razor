@@ -11,12 +11,17 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="nav flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="loginpage">
+                <span class="bi bi-megaphone-fill" aria-hidden="true"></span> Log Ind
+            </NavLink>
+        </div>
     </nav>
 </div>
 
 @code {
-    private bool collapseNavMenu = true;
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+private bool collapseNavMenu = true;
+private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
-    private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
+private void ToggleNavMenu() => collapseNavMenu = !collapseNavMenu;
 }
