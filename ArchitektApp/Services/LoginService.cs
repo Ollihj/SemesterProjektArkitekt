@@ -1,6 +1,3 @@
-
-
-
 using System.Net.Http.Json;
 using Core.Models;
 using ArchitektApp.Pages;
