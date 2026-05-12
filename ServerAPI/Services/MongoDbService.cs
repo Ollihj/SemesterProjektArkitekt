@@ -50,4 +50,10 @@ public class MongoDbService
     {
         return _database.GetCollection<Blokeret>("blokerede");
     }
+
+    // Returnerer samlingen af filer fra databasen (binære billedfiler)
+    public IMongoCollection<FileDocument> GetFiler()
+    {
+        return _database.GetCollection<FileDocument>("filer");
+    }
 }

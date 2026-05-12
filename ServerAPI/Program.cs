@@ -1,5 +1,6 @@
 using ServerAPI.Services;
 using ServerAPI.Repositories;
+using ServerAPI.Repositories.FileRepo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +13,9 @@ builder.Services.AddSingleton<IBookingRepository, BookingRepository>();
 builder.Services.AddSingleton<IProjektRepository, ProjektRepository>();
 builder.Services.AddSingleton<IAftaleRepository, AftaleRepository>();
 builder.Services.AddSingleton<IBlokeretRepository, BlokeretRepository>();
+
+// Registrerer FileRepository så det kan bruges i FileController via dependency injection
+builder.Services.AddSingleton<IFileRepository, MongoFileRepository>();
 
 // Tilføjer support for controllere til applikationen
 builder.Services.AddControllers();
