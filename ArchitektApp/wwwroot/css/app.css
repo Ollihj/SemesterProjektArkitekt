@@ -1,3 +1,8 @@
+:root {
+    --blazor-load-percentage: 0; /* Can be set to a percentage value like "50%" or any between 0 and 100 */
+    --blazor-load-percentage-text: "Loading"; /* Can be set to a percentage value like "50%" or any custom text */
+}
+
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -73,4 +78,198 @@ a, .btn-link {
 
 .loading-progress-text:after {
     content: var(--blazor-load-percentage-text, "Loading");
+}
+
+
+/* =====================
+   HOME PAGE
+   ===================== */
+
+/* Nav */
+.home-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    border-bottom: 1px solid #ddd;
+    background: #f9f8f5;
+}
+
+.home-logo {
+    font-size: 13px;
+    letter-spacing: 0.2em;
+}
+
+.home-nav-links {
+    display: flex;
+    gap: 32px;
+}
+
+.home-nav-links a {
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: #888;
+}
+
+.home-nav-links a:hover,
+.home-nav-links a.active {
+    color: #333;
+    font-weight: 600;
+}
+
+.home-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.home-nav-right span {
+    font-size: 12px;
+    color: #888;
+}
+
+.home-nav button,
+.home-nav-right button {
+    border: 1px solid #333;
+    padding: 8px 20px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    font-weight: bold;
+}
+
+/* Hero */
+.home-hero {
+    height: 90vh;
+    background: linear-gradient(135deg, #b0a898, #8a7e72);
+    display: flex;
+    align-items: flex-end;
+    padding: 60px 48px;
+}
+
+.home-hero h1 {
+    font-size: 72px;
+    font-weight: 300;
+    color: white;
+    line-height: 1.1;
+}
+
+/* Intro */
+.home-intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    padding: 100px 48px;
+    background: #f9f8f5;
+}
+
+.home-intro-left h2 {
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: #1a1a1a;
+}
+
+.home-intro-right p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #333;
+    margin-bottom: 24px;
+}
+
+.home-intro-right p:last-child {
+    color: #888;
+}
+
+/* Projekter */
+.home-projekter {
+    padding: 0 48px 80px;
+    background: #f9f8f5;
+}
+
+.home-section-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #888;
+    margin-bottom: 40px;
+}
+
+.home-projekter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+
+.home-projekt-card {
+    cursor: pointer;
+}
+
+.home-projekt-billede {
+    height: 400px;
+    background: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.home-projekt-billede img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.home-projekt-card p {
+    font-size: 14px;
+    color: #333;
+}
+
+.home-alle-projekter {
+    text-align: center;
+    margin-top: 48px;
+}
+
+.home-alle-projekter button {
+    border: 1px solid #333;
+    padding: 16px 40px;
+    background: transparent;
+    cursor: pointer;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+}
+
+/* CTA */
+.home-cta {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    padding: 100px 48px;
+    background: white;
+}
+
+.home-cta-left h2 {
+    font-size: 48px;
+    font-weight: 300;
+    line-height: 1.2;
+    color: #1a1a1a;
+}
+
+.home-cta-right p {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #888;
+    margin-bottom: 32px;
+}
+
+.home-cta-right button {
+    background: #4a5568;
+    color: white;
+    border: none;
+    padding: 16px 40px;
+    cursor: pointer;
+    font-size: 11px;
+    letter-spacing: 0.2em;
 }

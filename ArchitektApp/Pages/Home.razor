@@ -3,9 +3,124 @@
 @using Blazored.LocalStorage
 @inject NavigationManager Navigation
 @inject ILocalStorageService LocalStorage
+@inject HttpClient Http
 
-<h3>Home Page, wadduppppp</h3>
+<PageTitle>Studio Arkitekt</PageTitle>
+
+<!-- NAV -->
+<nav class="home-nav">
+    <span class="home-logo">STUDIO ARKITEKT</span>
+    <div class="home-nav-links">
+        <NavLink href="/" Match="NavLinkMatch.All">FORSIDE</NavLink>
+        <NavLink href="/projekter">PORTFOLIO</NavLink>
+        <NavLink href="/booking">KONTAKT</NavLink>
+    </div>
+    @if (erLoggetInd)
+    {
+        <div class="home-nav-right">
+            <span>@brugerNavn</span>
+            <button @onclick="LogUd">LOG UD</button>
+        </div>
+    }
+    else
+    {
+        <button @onclick='() => Navigation.NavigateTo("/LoginPage")'>LOG IND</button>
+    }
+</nav>
+
+<!-- HERO -->
+<section class="home-hero">
+    <h1>Arkitektur som<br />skaber værdi</h1>
+</section>
+
+<!-- INTRO SEKTION -->
+<section class="home-intro">
+    <div class="home-intro-left">
+        <h2>Vi designer rum<br />der inspirerer</h2>
+    </div>
+    <div class="home-intro-right">
+        <p>Vores tilgang til arkitektur bygger på en dyb forståelse for rummet, materialet og konteksten. Vi skaber bygninger der er både funktionelle og æstetiske — designs der forbliver tidløse.</p>
+        <p>Med over 15 års erfaring arbejder vi med alt fra private villaprojekter til større erhvervsbyggerier. Hver opgave behandles med samme omhu og dedikation til detaljen.</p>
+    </div>
+</section>
+
+<!-- PROJEKTER SEKTION -->
+<section class="home-projekter">
+    <p class="home-section-label">UDVALGTE PROJEKTER</p>
+
+    @if (projekter == null)
+    {
+        <p>Henter projekter...</p>
+    }
+    else if (projekter.Count == 0)
+    {
+        <p>Ingen projekter endnu.</p>
+    }
+    else
+    {
+        <div class="home-projekter-grid">
+            @foreach (var projekt in projekter.Take(2))
+            {
+                <div class="home-projekt-card" @onclick='() => Navigation.NavigateTo($"/projekter/{projekt.Id}")'>
+                    <div class="home-projekt-billede">
+                        @if (projekt.Billeder.Any())
+                        {
+                            <img src="@($"http://localhost:5000/api/file/download/{projekt.Billeder.First()}")" alt="@projekt.Navn" />
+                        }
+                        else
+                        {
+                            <span>Intet billede</span>
+                        }
+                    </div>
+                    <p>@projekt.Navn — @projekt.År</p>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="home-alle-projekter">
+        <button @onclick='() => Navigation.NavigateTo("/projekter")'>SE ALLE PROJEKTER →</button>
+    </div>
+</section>
+
+<!-- CTA SEKTION -->
+<section class="home-cta">
+    <div class="home-cta-left">
+        <h2>Lad os skabe noget<br />bemærkelsesværdigt<br />sammen</h2>
+    </div>
+    <div class="home-cta-right">
+        <p>Uanset om du har en konkret vision eller søger inspiration, er vi klar til at hjælpe dig med at realisere dit projekt.</p>
+        <button @onclick='() => Navigation.NavigateTo("/booking")'>BOOK KONSULTATION →</button>
+    </div>
+</section>
 
 @code {
-    
+    private bool erLoggetInd = false;
+    private string brugerNavn = "";
+    private List<Projekt>? projekter;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userId = await LocalStorage.GetItemAsync<int?>("userId");
+        brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
+        erLoggetInd = userId != null && userId > 0;
+
+        try
+        {
+            projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
+        }
+        catch
+        {
+            projekter = new List<Projekt>();
+        }
+    }
+
+    private async Task LogUd()
+    {
+        await LocalStorage.RemoveItemAsync("userId");
+        await LocalStorage.RemoveItemAsync("userName");
+        await LocalStorage.RemoveItemAsync("userRole");
+        erLoggetInd = false;
+        brugerNavn = "";
+    }
 }
