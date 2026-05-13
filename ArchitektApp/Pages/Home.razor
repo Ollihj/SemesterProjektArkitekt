@@ -7,14 +7,21 @@
 
 <PageTitle>Studio Arkitekt</PageTitle>
 
-<!-- NAV -->
+<!-- =====================
+     NAVIGATION
+     Viser logo, links og enten brugerens navn + log ud, eller en log ind-knap
+     ===================== -->
 <nav class="home-nav">
     <span class="home-logo">STUDIO ARKITEKT</span>
+
+    <!-- Links til de tre primære sider -->
     <div class="home-nav-links">
         <NavLink href="/" Match="NavLinkMatch.All">FORSIDE</NavLink>
         <NavLink href="/projekter">PORTFOLIO</NavLink>
         <NavLink href="/booking">KONTAKT</NavLink>
     </div>
+
+    <!-- Hvis brugeren er logget ind vises navn og log ud-knap, ellers vises log ind-knap -->
     @if (erLoggetInd)
     {
         <div class="home-nav-right">
@@ -28,12 +35,18 @@
     }
 </nav>
 
-<!-- HERO -->
+<!-- =====================
+     HERO SEKTION
+     Stor indledende sektion øverst på siden
+     ===================== -->
 <section class="home-hero">
     <h1>Arkitektur som<br />skaber værdi</h1>
 </section>
 
-<!-- INTRO SEKTION -->
+<!-- =====================
+     INTRO SEKTION
+     To-kolonne layout med overskrift til venstre og beskrivende tekst til højre
+     ===================== -->
 <section class="home-intro">
     <div class="home-intro-left">
         <h2>Vi designer rum<br />der inspirerer</h2>
@@ -44,27 +57,36 @@
     </div>
 </section>
 
-<!-- PROJEKTER SEKTION -->
+<!-- =====================
+     PROJEKTER SEKTION
+     Viser de 2 nyeste projekter hentet fra databasen
+     Klik på et projekt navigerer til projektets detaljeside
+     ===================== -->
 <section class="home-projekter">
     <p class="home-section-label">UDVALGTE PROJEKTER</p>
 
     @if (projekter == null)
     {
+        <!-- Vises mens projekter hentes fra serveren -->
         <p>Henter projekter...</p>
     }
     else if (projekter.Count == 0)
     {
+        <!-- Vises hvis der ingen projekter er i databasen endnu -->
         <p>Ingen projekter endnu.</p>
     }
     else
     {
+        <!-- Viser kun de 2 første projekter på forsiden med .Take(2) -->
         <div class="home-projekter-grid">
             @foreach (var projekt in projekter.Take(2))
             {
+                <!-- Klik på kortet navigerer til projektets detaljeside -->
                 <div class="home-projekt-card" @onclick='() => Navigation.NavigateTo($"/projekter/{projekt.Id}")'>
                     <div class="home-projekt-billede">
                         @if (projekt.Billeder.Any())
                         {
+                            <!-- Henter det første billede fra serveren via download-endpointet -->
                             <img src="@($"http://localhost:5000/api/file/download/{projekt.Billeder.First()}")" alt="@projekt.Navn" />
                         }
                         else
@@ -78,12 +100,16 @@
         </div>
     }
 
+    <!-- Knap der navigerer til den fulde portfolioside -->
     <div class="home-alle-projekter">
         <button @onclick='() => Navigation.NavigateTo("/projekter")'>SE ALLE PROJEKTER →</button>
     </div>
 </section>
 
-<!-- CTA SEKTION -->
+<!-- =====================
+     CTA SEKTION (Call To Action)
+     Opfordrer besøgende til at tage kontakt
+     ===================== -->
 <section class="home-cta">
     <div class="home-cta-left">
         <h2>Lad os skabe noget<br />bemærkelsesværdigt<br />sammen</h2>
@@ -95,16 +121,24 @@
 </section>
 
 @code {
+    // Styrer om login-knap eller brugernavn/log ud vises i navigationen
     private bool erLoggetInd = false;
     private string brugerNavn = "";
+
+    // Listen af projekter hentet fra API'et — null mens de hentes, tom liste hvis ingen findes
     private List<Projekt>? projekter;
 
+    // Kører automatisk når siden indlæses
     protected override async Task OnInitializedAsync()
     {
+        // Henter brugeroplysninger fra LocalStorage for at tjekke om man er logget ind
         var userId = await LocalStorage.GetItemAsync<int?>("userId");
         brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
+
+        // Brugeren anses som logget ind hvis der findes et gyldigt userId i LocalStorage
         erLoggetInd = userId != null && userId > 0;
 
+        // Henter alle projekter fra API'et — ved fejl bruges en tom liste så siden ikke crasher
         try
         {
             projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
@@ -115,11 +149,14 @@
         }
     }
 
+    // Logger brugeren ud ved at slette alle brugerdata fra LocalStorage
     private async Task LogUd()
     {
         await LocalStorage.RemoveItemAsync("userId");
         await LocalStorage.RemoveItemAsync("userName");
         await LocalStorage.RemoveItemAsync("userRole");
+
+        // Opdaterer UI så log ind-knappen vises igen uden at genindlæse siden
         erLoggetInd = false;
         brugerNavn = "";
     }
