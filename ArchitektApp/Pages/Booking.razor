@@ -3,90 +3,163 @@
 @inject NavigationManager Navigation
 @inject HttpClient Http
 
-<div class="col-lg-7 offset-lg-5">
-    <div class="booking-form-container">
-        <!-- @onsubmit kalder SendBooking metoden når formularen indsendes -->
-        <!-- @onsubmit:preventDefault forhindrer siden i at reloade ved submit -->
-        <form @onsubmit="SendBooking" @onsubmit:preventDefault>
+<nav class="home-nav">
+    <span class="home-logo">Johan Bertelsen Arkitekt MAA</span>
+    <div class="home-nav-links">
+        <NavLink href="/" Match="NavLinkMatch.All">FORSIDE</NavLink>
+        <NavLink href="/projekter">PORTFOLIO</NavLink>
+        <NavLink href="/booking">KONTAKT</NavLink>
+    </div>
+    @if (erLoggetInd)
+    {
+        <div class="home-nav-right">
+            <span>@brugerNavn</span>
+            <button @onclick="LogUd">LOG UD</button>
+        </div>
+    }
+    else
+    {
+        <button @onclick='() => Navigation.NavigateTo("/LoginPage")'>LOG IND</button>
+    }
+</nav>
 
-            <!-- Navn -->
-            <div class="form-group">
-                <label for="customerName">NAVN</label>
-                <!-- @bind kobler input feltet til nyBooking.Kundenavn variablen -->
-                <input type="text"
-                       class="form-control"
-                       id="customerName"
-                       placeholder="Dit fulde navn"
-                       @bind="nyBooking.Kundenavn"
-                       required />
+<div class="booking-page">
+    <!-- Hero/Header Section -->
+    <div class="booking-header">
+        <div class="container">
+            <span class="page-label">KONTAKT</span>
+            <h1 class="page-title">
+                Lad os tale om<br />dit projekt
+            </h1>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="booking-content">
+        <div class="container">
+            <div class="row">
+                <!-- Left Column - Info -->
+                <div class="col-lg-5">
+                    <div class="booking-info">
+                        <p class="booking-intro">
+                            Udfyld formularen, så vender vi tilbage hurtigst muligt for at aftale et uforpligtende møde.
+                        </p>
+
+                        <div class="contact-details">
+                            <div class="contact-item">
+                                <span class="contact-label">EMAIL</span>
+                                <a href="mailto:kontakt@arkitektstudio.dk" class="contact-link">
+                                    kontakt@arkitektstudio.dk
+                                </a>
+                            </div>
+                            <div class="contact-item">
+                                <span class="contact-label">TELEFON</span>
+                                <a href="tel:+4512345678" class="contact-link">
+                                    +45 12 34 56 78
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - Form -->
+                <div class="col-lg-6 offset-lg-1">
+                    <div class="booking-form-container">
+                        <form @onsubmit="SendBooking" @onsubmit:preventDefault>
+
+                            <!-- Navn -->
+                            <div class="form-group">
+                                <label for="customerName">NAVN</label>
+                                <input type="text"
+                                       class="form-control"
+                                       id="customerName"
+                                       placeholder="Dit fulde navn"
+                                       @bind="nyBooking.Kundenavn"
+                                       required />
+                            </div>
+
+                            <!-- Email -->
+                            <div class="form-group">
+                                <label for="customerEmail">EMAIL</label>
+                                <input type="email"
+                                       class="form-control"
+                                       id="customerEmail"
+                                       placeholder="din@email.dk"
+                                       @bind="nyBooking.Kundemail"
+                                       required />
+                            </div>
+
+                            <!-- Telefon -->
+                            <div class="form-group">
+                                <label for="customerPhone">TELEFON</label>
+                                <input type="tel"
+                                       class="form-control"
+                                       id="customerPhone"
+                                       placeholder="+45"
+                                       @bind="nyBooking.KundeTlf"
+                                       required />
+                            </div>
+
+                            <!-- Dato og Tidspunkt (side om side) -->
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="date">DATO</label>
+                                        <input type="date"
+                                               class="form-control"
+                                               id="date"
+                                               @bind="valgDato"
+                                               required />
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="time">TIDSPUNKT</label>
+                                        <input type="time"
+                                               class="form-control"
+                                               id="time"
+                                               @bind="valgTid"
+                                               required />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Beskrivelse -->
+                            <div class="form-group">
+                                <label for="description">BESKRIVELSE</label>
+                                <textarea class="form-control"
+                                          id="description"
+                                          rows="5"
+                                          placeholder="Fortæl os om dit projekt..."
+                                          @bind="nyBooking.Beskrivelse"
+                                          required></textarea>
+                            </div>
+
+                            <!-- Submit knap -->
+                            <button type="submit" class="btn-submit">
+                                SEND FORESPØRGSEL
+                            </button>
+
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            <!-- Email -->
-            <div class="form-group">
-                <label for="customerEmail">EMAIL</label>
-                <!-- @bind kobler input feltet til nyBooking.Kundemail variablen -->
-                <input type="email"
-                       class="form-control"
-                       id="customerEmail"
-                       placeholder="din@email.dk"
-                       @bind="nyBooking.Kundemail"
-                       required />
-            </div>
-
-            <!-- Telefon -->
-            <div class="form-group">
-                <label for="customerPhone">TELEFON</label>
-                <!-- @bind kobler input feltet til nyBooking.KundeTlf variablen -->
-                <input type="tel"
-                       class="form-control"
-                       id="customerPhone"
-                       placeholder="+45"
-                       @bind="nyBooking.KundeTlf"
-                       required />
-            </div>
-
-            <!-- Dato -->
-            <div class="form-group">
-                <label for="date">DATO</label>
-                <input type="date"
-                       class="form-control"
-                       id="date"
-                       @bind="valgDato"
-                       required />
-            </div>
-
-            <!-- Tidspunkt -->
-            <div class="form-group">
-                <label for="time">TIDSPUNKT</label>
-                <input type="time"
-                       class="form-control"
-                       id="time"
-                       @bind="valgTid"
-                       required />
-            </div>
-
-            <!-- Beskrivelse -->
-            <div class="form-group">
-                <label for="description">BESKRIVELSE</label>
-                <!-- @bind kobler textarea til nyBooking.Beskrivelse variablen -->
-                <textarea class="form-control"
-                          id="description"
-                          rows="5"
-                          placeholder="Fortæl os om dit projekt..."
-                          @bind="nyBooking.Beskrivelse"
-                          required></textarea>
-            </div>
-
-            <!-- Submit knap -->
-            <button type="submit" class="btn btn-submit btn-block">
-                SEND FORESPØRGSEL
-            </button>
-
-        </form>
+        </div>
     </div>
 </div>
 
 @code {
+    
+    private bool erLoggetInd = false;
+    private string brugerNavn = "";
+    
+     private void LogUd()
+    {
+        erLoggetInd = false;
+        brugerNavn = "";
+        Navigation.NavigateTo("/");
+    }
+    
     // Opretter et tomt Booking objekt som formularen udfylder
     // Core.Models.Booking bruges her fordi Booking.razor selv hedder "Booking" og skaber navnekollision
     private Core.Models.Booking nyBooking = new Core.Models.Booking();

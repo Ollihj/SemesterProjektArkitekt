@@ -1,49 +1,124 @@
-/* Import Google Fonts 
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
-*/
-/* Form container */
+/* Page Background */
+.booking-page {
+    background-color: #F7F5F2;
+    min-height: 100vh;
+}
+
+/* Header Section */
+.booking-header {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid rgba(28, 28, 28, 0.15);
+    padding: 80px 0;
+}
+
+.page-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(28, 28, 28, 0.6);
+    margin-bottom: 32px;
+    font-family: 'Inter', sans-serif;
+}
+
+.page-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 56px;
+    line-height: 1.1;
+    letter-spacing: 0.02em;
+    color: #1C1C1C;
+    margin: 0;
+}
+
+/* Content Section */
+.booking-content {
+    padding: 96px 0;
+}
+
+/* Left Column - Info */
+.booking-info {
+    padding-right: 40px;
+}
+
+.booking-intro {
+    color: rgba(28, 28, 28, 0.7);
+    line-height: 1.7;
+    margin-bottom: 48px;
+    font-size: 16px;
+}
+
+.contact-details {
+    border-top: 1px solid rgba(28, 28, 28, 0.15);
+    padding-top: 32px;
+}
+
+.contact-item {
+    margin-bottom: 24px;
+}
+
+.contact-label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(28, 28, 28, 0.5);
+    margin-bottom: 8px;
+    font-family: 'Inter', sans-serif;
+}
+
+.contact-link {
+    color: #1C1C1C;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    font-size: 16px;
+}
+
+.contact-link:hover {
+    color: #4A6580;
+}
+
+/* Form Container */
 .booking-form-container {
     background-color: #FFFFFF;
     border: 1px solid rgba(28, 28, 28, 0.1);
-    padding: 3rem;
+    padding: 48px;
 }
 
-/* Form groups */
+/* Form Groups */
 .form-group {
-    margin-bottom: 2rem;
+    margin-bottom: 32px;
 }
 
-/* Labels */
 .form-group label {
-    font-family: 'Inter', sans-serif;
+    display: block;
     font-size: 11px;
-    font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: rgba(28, 28, 28, 0.6);
-    margin-bottom: 0.75rem;
-    display: block;
+    margin-bottom: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
 }
 
-/* Form controls */
+/* Form Controls */
 .form-control {
-    font-family: 'Inter', sans-serif;
-    font-size: 16px;
-    color: #1C1C1C;
-    background-color: transparent;
+    width: 100%;
+    padding: 12px 0;
     border: none;
     border-bottom: 1px solid rgba(28, 28, 28, 0.2);
-    border-radius: 0;
-    padding: 0.75rem 0;
-    box-shadow: none;
+    background-color: transparent;
+    font-size: 16px;
+    color: #1C1C1C;
+    font-family: 'Inter', sans-serif;
     transition: border-color 0.3s ease;
+    border-radius: 0;
 }
 
 .form-control:focus {
-    background-color: transparent;
-    border-color: #1C1C1C;
-    box-shadow: none;
     outline: none;
+    border-bottom-color: #1C1C1C;
+    box-shadow: none;
 }
 
 .form-control::placeholder {
@@ -53,44 +128,62 @@
 /* Textarea */
 textarea.form-control {
     resize: none;
+    padding: 12px 0;
 }
 
-/* Submit button */
+/* Submit Button */
 .btn-submit {
-    font-family: 'Inter', sans-serif;
     width: 100%;
-    padding: 1rem;
-    margin-top: 2rem;
-    background-color: #1C1C1C;
+    padding: 16px 32px;
     border: 1px solid #1C1C1C;
+    background-color: #1C1C1C;
     color: #FFFFFF;
     font-size: 11px;
-    font-weight: 400;
     letter-spacing: 0.15em;
     text-transform: uppercase;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    cursor: pointer;
     transition: all 0.3s ease;
+    margin-top: 32px;
     border-radius: 0;
 }
 
 .btn-submit:hover {
     background-color: transparent;
     color: #1C1C1C;
-    border-color: #1C1C1C;
 }
 
-.btn-submit:focus {
-    box-shadow: none;
-    outline: none;
+/* Responsive Design */
+@media (max-width: 991px) {
+    .page-title {
+        font-size: 42px;
+    }
+
+    .booking-content {
+        padding: 64px 0;
+    }
+
+    .booking-info {
+        padding-right: 0;
+        margin-bottom: 48px;
+    }
+
+    .booking-form-container {
+        padding: 32px;
+    }
 }
 
-/* Background color */
-body {
-    background-color: #F7F5F2;
-    font-family: 'Inter', sans-serif;
-}
+@media (max-width: 767px) {
+    .booking-header {
+        padding: 48px 0;
+    }
 
-/* Remove default Bootstrap focus glow */
-.form-control:focus,
-.btn:focus {
-    box-shadow: none !important;
+    .page-title {
+        font-size: 36px;
+    }
+
+    .booking-form-container {
+        padding: 24px;
+    }
 }
