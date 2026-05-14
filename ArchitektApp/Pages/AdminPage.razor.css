@@ -1,0 +1,127 @@
+/* Layout: sidebar til venstre, hovedindhold til højre, fylder hele skærmen */
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: #1a1a1a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+}
+
+.admin-logo {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #333;
+}
+
+.admin-velkommen {
+    font-size: 12px;
+    color: #888;
+    padding: 16px 24px;
+    margin: 0;
+}
+
+/* Sektionsknapper i sidebaren */
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    margin-top: 8px;
+    flex: 1;
+}
+
+.admin-nav-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    text-align: left;
+    padding: 14px 24px;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.15s, color 0.15s;
+}
+
+.admin-nav-btn:hover {
+    background: #2a2a2a;
+    color: white;
+}
+
+/* Den aktive sektion fremhæves med hvid tekst og venstre border */
+.admin-nav-btn.aktiv {
+    color: white;
+    border-left: 3px solid white;
+    background: #2a2a2a;
+}
+
+/* Log ud og forside-knapper i bunden */
+.admin-sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid #333;
+    padding-top: 8px;
+}
+
+.admin-log-ud {
+    color: #e05555;
+}
+
+.admin-log-ud:hover {
+    color: #ff6666;
+}
+
+/* HOVEDINDHOLD */
+.admin-main {
+    flex: 1;
+    padding: 48px;
+    background: #f9f8f5;
+    overflow-y: auto;
+}
+
+.admin-sektion-titel {
+    font-size: 24px;
+    font-weight: 300;
+    color: #1a1a1a;
+    margin-bottom: 32px;
+    letter-spacing: 0.05em;
+}
+
+.admin-tom {
+    color: #888;
+    font-size: 14px;
+}
+
+/* HENVENDELSER TABEL */
+.admin-tabel {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    font-size: 13px;
+}
+
+.admin-tabel th {
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: #888;
+    border-bottom: 2px solid #eee;
+}
+
+.admin-tabel td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+    vertical-align: top;
+}
+
+.admin-tabel tr:hover td {
+    background: #fafafa;
+}

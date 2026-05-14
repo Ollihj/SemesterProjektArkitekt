@@ -1,0 +1,162 @@
+@page "/admin"
+@using Core.Models
+@using Blazored.LocalStorage
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
+@inject HttpClient Http
+
+<PageTitle>Admin Dashboard</PageTitle>
+
+<!-- =====================
+     DASHBOARD LAYOUT
+     Sidebar til venstre med sektionsknapper, hovedindhold til højre
+     ===================== -->
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="admin-logo">STUDIO ARKITEKT</div>
+        <p class="admin-velkommen">Velkommen, @brugerNavn</p>
+
+        <!-- Sektionsknapper — klik skifter den aktive sektion uden at genindlæse siden -->
+        <nav class="admin-nav">
+            <button class="admin-nav-btn @(aktivSektion == "henvendelser" ? "aktiv" : "")"
+                    @onclick='() => aktivSektion = "henvendelser"'>
+                Henvendelser
+            </button>
+            <button class="admin-nav-btn @(aktivSektion == "medarbejdere" ? "aktiv" : "")"
+                    @onclick='() => aktivSektion = "medarbejdere"'>
+                Medarbejdere
+            </button>
+            <button class="admin-nav-btn @(aktivSektion == "projekter" ? "aktiv" : "")"
+                    @onclick='() => aktivSektion = "projekter"'>
+                Projekter
+            </button>
+            <button class="admin-nav-btn @(aktivSektion == "kalender" ? "aktiv" : "")"
+                    @onclick='() => aktivSektion = "kalender"'>
+                Kalender
+            </button>
+        </nav>
+
+        <!-- Log ud og tilbage til forside i bunden af sidebaren -->
+        <div class="admin-sidebar-footer">
+            <button class="admin-nav-btn" @onclick='() => Navigation.NavigateTo("/")'>← Forside</button>
+            <button class="admin-nav-btn admin-log-ud" @onclick="LogUd">Log ud</button>
+        </div>
+    </aside>
+
+    <!-- HOVEDINDHOLD -->
+    <main class="admin-main">
+
+        <!-- =====================
+             HENVENDELSER SEKTION
+             Viser alle indkomne bookinger fra kunder i en tabel
+             ===================== -->
+        @if (aktivSektion == "henvendelser")
+        {
+            <h2 class="admin-sektion-titel">Henvendelser</h2>
+
+            @if (henvendelser == null)
+            {
+                <!-- Vises mens henvendelser hentes fra serveren -->
+                <p>Henter henvendelser...</p>
+            }
+            else if (henvendelser.Count == 0)
+            {
+                <p class="admin-tom">Ingen henvendelser endnu.</p>
+            }
+            else
+            {
+                <table class="admin-tabel">
+                    <thead>
+                        <tr>
+                            <th>NAVN</th>
+                            <th>EMAIL</th>
+                            <th>TELEFON</th>
+                            <th>ØNSKET DATO</th>
+                            <th>BESKRIVELSE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var h in henvendelser)
+                        {
+                            <tr>
+                                <td>@h.Kundenavn</td>
+                                <td>@h.Kundemail</td>
+                                <td>@h.KundeTlf</td>
+                                <!-- Formaterer datoen til dansk format dag/måned/år og klokkeslæt -->
+                                <td>@h.OensketDato.ToString("dd/MM/yyyy HH:mm")</td>
+                                <td>@h.Beskrivelse</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+
+        <!-- =====================
+             MEDARBEJDERE SEKTION (ikke implementeret endnu)
+             ===================== -->
+        @if (aktivSektion == "medarbejdere")
+        {
+            <h2 class="admin-sektion-titel">Medarbejdere</h2>
+            <p class="admin-tom">Kommer snart.</p>
+        }
+
+        <!-- =====================
+             PROJEKTER SEKTION (ikke implementeret endnu)
+             ===================== -->
+        @if (aktivSektion == "projekter")
+        {
+            <h2 class="admin-sektion-titel">Projekter</h2>
+            <p class="admin-tom">Kommer snart.</p>
+        }
+
+        <!-- =====================
+             KALENDER SEKTION (ikke implementeret endnu)
+             ===================== -->
+        @if (aktivSektion == "kalender")
+        {
+            <h2 class="admin-sektion-titel">Kalender</h2>
+            <p class="admin-tom">Kommer snart.</p>
+        }
+
+    </main>
+</div>
+
+@code {
+    // Styrer hvilken sektion der vises — starter med henvendelser
+    private string aktivSektion = "henvendelser";
+
+    private string brugerNavn = "";
+
+    // Core.Models.Booking bruges eksplicit fordi Booking.razor-komponenten ellers skaber navnekollision
+    private List<Core.Models.Booking>? henvendelser;
+
+    // Kører automatisk når siden indlæses
+    protected override async Task OnInitializedAsync()
+    {
+        // Henter brugeroplysninger fra LocalStorage
+        var userRole = await LocalStorage.GetItemAsync<string>("userRole");
+        brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
+
+        // Hvis brugeren ikke er admin sendes de tilbage til forsiden
+        if (userRole != "admin")
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        // Henter alle henvendelser fra API'et
+        henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
+    }
+
+    // Logger brugeren ud og sender dem til forsiden
+    private async Task LogUd()
+    {
+        await LocalStorage.RemoveItemAsync("userId");
+        await LocalStorage.RemoveItemAsync("userName");
+        await LocalStorage.RemoveItemAsync("userRole");
+        Navigation.NavigateTo("/");
+    }
+}

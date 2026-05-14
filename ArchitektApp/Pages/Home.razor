@@ -21,10 +21,12 @@
         <NavLink href="/booking">KONTAKT</NavLink>
     </div>
 
-    <!-- Hvis brugeren er logget ind vises navn og log ud-knap, ellers vises log ind-knap -->
+    <!-- Hvis brugeren er logget ind vises dashboard-link, navn og log ud-knap, ellers vises log ind-knap -->
     @if (erLoggetInd)
     {
         <div class="home-nav-right">
+            <!-- Dashboard-knappen er kun synlig når man er logget ind -->
+            <button @onclick='() => Navigation.NavigateTo("/admin")'>DASHBOARD</button>
             <span>@brugerNavn</span>
             <button @onclick="LogUd">LOG UD</button>
         </div>
