@@ -1,0 +1,112 @@
+@page "/projekter"
+@using Core.Models
+@using Blazored.LocalStorage
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
+@inject HttpClient Http
+
+<PageTitle>Portfolio — Studio Arkitekt</PageTitle>
+
+<!-- Navigation -->
+<nav class="home-nav">
+    <span class="home-logo">JOHAN BERTELSEN, ARKITEKT MAA</span>
+    <div class="home-nav-links">
+        <NavLink href="/" Match="NavLinkMatch.All">FORSIDE</NavLink>
+        <NavLink href="/projekter">PORTFOLIO</NavLink>
+        <NavLink href="/booking">KONTAKT</NavLink>
+    </div>
+    @if (erLoggetInd)
+    {
+        <div class="home-nav-right">
+            <button @onclick='() => Navigation.NavigateTo("/admin")'>DASHBOARD</button>
+            <span>@brugerNavn</span>
+            <button @onclick="LogUd">LOG UD</button>
+        </div>
+    }
+    else
+    {
+        <button @onclick='() => Navigation.NavigateTo("/LoginPage")'>LOG IND</button>
+    }
+</nav>
+
+<!-- SIDE HEADER -->
+<div class="portfolio-header">
+    <p class="portfolio-label">PORTFOLIO</p>
+    <h1>Udvalgte projekter</h1>
+</div>
+
+<!-- PROJEKTER -->
+@if (projekter == null)
+{
+    <p class="portfolio-loading">Henter projekter...</p>
+}
+else if (projekter.Count == 0)
+{
+    <p class="portfolio-loading">Ingen projekter endnu.</p>
+}
+else
+{
+    <!-- Hvert projekt vises i sin egen sektion
+         Hver anden sektion har klassen "omvendt" som spejlvender layoutet
+         så billedet skifter mellem venstre og højre -->
+    @foreach (var (projekt, index) in projekter.Select((p, i) => (p, i)))
+    {
+        <section class="projekt-sektion @(index % 2 == 1 ? "omvendt" : "")">
+            <div class="projekt-layout">
+
+                <!-- BILLEDE -->
+                <div class="projekt-billede-wrapper">
+                    @if (projekt.Billeder.Any())
+                    {
+                        <img src="@($"http://localhost:5000/api/file/download/{projekt.Billeder.First()}")"
+                             alt="@projekt.Navn" />
+                    }
+                    else
+                    {
+                        <!-- Grå flade hvis projektet ikke har billeder endnu -->
+                        <div class="projekt-ingen-billede"></div>
+                    }
+                </div>
+
+                <!-- TEKST — vertikalt centreret i forhold til billedets højde -->
+                <div class="projekt-tekst">
+                    <!-- Projektnummer genereret ud fra rækkefølgen i listen -->
+                    <p class="projekt-label">PROJEKT @((index + 1).ToString("D2"))</p>
+                    <h2 class="projekt-titel">@projekt.Navn</h2>
+                    <p class="projekt-beskrivelse">@projekt.Beskrivelse</p>
+                    <button class="projekt-laes-mere"
+                            @onclick='() => Navigation.NavigateTo($"/projekter/{projekt.Id}")'>
+                        SE PROJEKT →
+                    </button>
+                </div>
+
+            </div>
+        </section>
+    }
+}
+
+@code {
+    private bool erLoggetInd = false;
+    private string brugerNavn = "";
+    private List<Projekt>? projekter;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Tjekker om brugeren er logget ind for at vise dashboard-knappen
+        var userId = await LocalStorage.GetItemAsync<int?>("userId");
+        brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
+        erLoggetInd = userId != null && userId > 0;
+
+        // Henter alle projekter fra API'et
+        projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
+    }
+
+    private async Task LogUd()
+    {
+        await LocalStorage.RemoveItemAsync("userId");
+        await LocalStorage.RemoveItemAsync("userName");
+        await LocalStorage.RemoveItemAsync("userRole");
+        erLoggetInd = false;
+        brugerNavn = "";
+    }
+}

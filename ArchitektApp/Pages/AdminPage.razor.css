@@ -98,6 +98,205 @@
     font-size: 14px;
 }
 
+/* SEKTION HEADER: titel og opret-knap side om side */
+.admin-sektion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.admin-sektion-header .admin-sektion-titel {
+    margin-bottom: 0;
+}
+
+/* KNAPPER */
+.admin-knap {
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+}
+
+.admin-knap:hover {
+    background: #333;
+}
+
+.admin-knap-sek {
+    background: transparent;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+}
+
+.admin-knap-sek:hover {
+    border-color: #333;
+}
+
+.admin-knap-fare {
+    background: transparent;
+    color: #e05555;
+    border: 1px solid #e05555;
+    padding: 10px 20px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.admin-knap-fare:hover {
+    background: #fef2f2;
+}
+
+/* PROJEKT GRID: kort med billede og info */
+.admin-projekt-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 24px;
+}
+
+.admin-projekt-kort {
+    background: white;
+    border: 1px solid #eee;
+}
+
+.admin-projekt-billede {
+    height: 180px;
+    background: #ddd;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 13px;
+}
+
+.admin-projekt-billede img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-projekt-info {
+    padding: 16px;
+}
+
+.admin-projekt-navn {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 4px;
+}
+
+.admin-projekt-aar {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.admin-projekt-knapper {
+    display: flex;
+    gap: 8px;
+}
+
+/* FORMULAR */
+.admin-formular {
+    background: white;
+    padding: 32px;
+    max-width: 640px;
+}
+
+.admin-formular-titel {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 24px;
+    color: #1a1a1a;
+}
+
+.admin-felt {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-felt label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: #888;
+}
+
+.admin-felt input,
+.admin-felt textarea {
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    font-size: 14px;
+    width: 100%;
+    font-family: inherit;
+}
+
+.admin-felt textarea {
+    resize: vertical;
+}
+
+/* EKSISTERENDE BILLEDER: thumbnails med slet-knap */
+.admin-billeder-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.admin-billede-thumb {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.admin-billede-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-billede-slet {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-upload-status {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+}
+
+.admin-status {
+    font-size: 13px;
+    color: #2a7a2a;
+    margin-bottom: 16px;
+}
+
+.admin-formular-knapper {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
 /* HENVENDELSER TABEL */
 .admin-tabel {
     width: 100%;

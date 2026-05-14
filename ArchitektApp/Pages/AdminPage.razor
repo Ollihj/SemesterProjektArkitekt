@@ -1,9 +1,11 @@
 @page "/admin"
 @using Core.Models
 @using Blazored.LocalStorage
+@using ArchitektApp.Service
 @inject NavigationManager Navigation
 @inject ILocalStorageService LocalStorage
 @inject HttpClient Http
+@inject FileService FileService
 
 <PageTitle>Admin Dashboard</PageTitle>
 
@@ -21,19 +23,19 @@
         <!-- Sektionsknapper — klik skifter den aktive sektion uden at genindlæse siden -->
         <nav class="admin-nav">
             <button class="admin-nav-btn @(aktivSektion == "henvendelser" ? "aktiv" : "")"
-                    @onclick='() => aktivSektion = "henvendelser"'>
+                    @onclick='() => SkiftSektion("henvendelser")'>
                 Henvendelser
             </button>
             <button class="admin-nav-btn @(aktivSektion == "medarbejdere" ? "aktiv" : "")"
-                    @onclick='() => aktivSektion = "medarbejdere"'>
+                    @onclick='() => SkiftSektion("medarbejdere")'>
                 Medarbejdere
             </button>
             <button class="admin-nav-btn @(aktivSektion == "projekter" ? "aktiv" : "")"
-                    @onclick='() => aktivSektion = "projekter"'>
+                    @onclick='() => SkiftSektion("projekter")'>
                 Projekter
             </button>
             <button class="admin-nav-btn @(aktivSektion == "kalender" ? "aktiv" : "")"
-                    @onclick='() => aktivSektion = "kalender"'>
+                    @onclick='() => SkiftSektion("kalender")'>
                 Kalender
             </button>
         </nav>
@@ -104,12 +106,132 @@
         }
 
         <!-- =====================
-             PROJEKTER SEKTION (ikke implementeret endnu)
+             PROJEKTER SEKTION
+             Liste over projekter med mulighed for at oprette og redigere
              ===================== -->
         @if (aktivSektion == "projekter")
         {
-            <h2 class="admin-sektion-titel">Projekter</h2>
-            <p class="admin-tom">Kommer snart.</p>
+            <div class="admin-sektion-header">
+                <h2 class="admin-sektion-titel">Projekter</h2>
+
+                @if (!visFormular)
+                {
+                    <!-- Knap til at åbne opret-formularen -->
+                    <button class="admin-knap" @onclick="VisOpretFormular">+ Opret nyt projekt</button>
+                }
+            </div>
+
+            @if (!visFormular)
+            {
+                <!-- LISTE OVER EKSISTERENDE PROJEKTER -->
+                @if (projekter == null)
+                {
+                    <p>Henter projekter...</p>
+                }
+                else if (projekter.Count == 0)
+                {
+                    <p class="admin-tom">Ingen projekter endnu.</p>
+                }
+                else
+                {
+                    <div class="admin-projekt-grid">
+                        @foreach (var p in projekter)
+                        {
+                            <div class="admin-projekt-kort">
+                                <!-- Viser det første billede som thumbnail, eller en grå flade hvis ingen billeder -->
+                                <div class="admin-projekt-billede">
+                                    @if (p.Billeder.Any())
+                                    {
+                                        <img src="@FileService.GetImageUrl(p.Billeder.First())" alt="@p.Navn" />
+                                    }
+                                    else
+                                    {
+                                        <span>Intet billede</span>
+                                    }
+                                </div>
+                                <div class="admin-projekt-info">
+                                    <p class="admin-projekt-navn">@p.Navn</p>
+                                    <p class="admin-projekt-aar">@p.År</p>
+                                    <div class="admin-projekt-knapper">
+                                        <!-- Rediger-knap udfylder formularen med projektets data -->
+                                        <button class="admin-knap-sek" @onclick="() => VisRedigerFormular(p)">Rediger</button>
+                                        <button class="admin-knap-fare" @onclick="() => SletProjekt(p.Id)">Slet</button>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            }
+            else
+            {
+                <!-- =====================
+                     OPRET / REDIGER FORMULAR
+                     Samme formular bruges til både opret og rediger
+                     erRedigering styrer om der sendes POST eller PUT
+                     ===================== -->
+                <div class="admin-formular">
+                    <h3 class="admin-formular-titel">@(erRedigering ? "Rediger projekt" : "Nyt projekt")</h3>
+
+                    <!-- Navn -->
+                    <div class="admin-felt">
+                        <label>NAVN</label>
+                        <input type="text" @bind="aktivProjekt.Navn" placeholder="Projektnavn" />
+                    </div>
+
+                    <!-- Beskrivelse -->
+                    <div class="admin-felt">
+                        <label>BESKRIVELSE</label>
+                        <textarea @bind="aktivProjekt.Beskrivelse" rows="4" placeholder="Beskriv projektet..."></textarea>
+                    </div>
+
+                    <!-- År -->
+                    <div class="admin-felt">
+                        <label>ÅR</label>
+                        <input type="number" @bind="aktivProjekt.År" placeholder="2024" />
+                    </div>
+
+                    <!-- Eksisterende billeder — vises kun ved redigering -->
+                    @if (erRedigering && aktivProjekt.Billeder.Any())
+                    {
+                        <div class="admin-felt">
+                            <label>EKSISTERENDE BILLEDER</label>
+                            <div class="admin-billeder-grid">
+                                @foreach (var billede in aktivProjekt.Billeder.ToList())
+                                {
+                                    <div class="admin-billede-thumb">
+                                        <img src="@FileService.GetImageUrl(billede)" alt="billede" />
+                                        <!-- Slet-knap fjerner billedet fra projektet og databasen -->
+                                        <button class="admin-billede-slet" @onclick="() => FjernBillede(billede)">×</button>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Upload nye billeder — accept="image/*" begrænser til billedfiler -->
+                    <div class="admin-felt">
+                        <label>TILFØJ BILLEDER</label>
+                        <InputFile OnChange="UploadBilleder" multiple accept="image/*" />
+                        @if (uploaderBilleder)
+                        {
+                            <p class="admin-upload-status">Uploader billeder...</p>
+                        }
+                    </div>
+
+                    <!-- Statusbesked der vises efter gem forsøg -->
+                    @if (!string.IsNullOrEmpty(projektStatus))
+                    {
+                        <p class="admin-status">@projektStatus</p>
+                    }
+
+                    <div class="admin-formular-knapper">
+                        <button class="admin-knap" @onclick="GemProjekt">Gem projekt</button>
+                        <!-- Annuller lukker formularen og viser listen igen -->
+                        <button class="admin-knap-sek" @onclick="LukFormular">Annuller</button>
+                    </div>
+                </div>
+            }
         }
 
         <!-- =====================
@@ -129,9 +251,28 @@
     private string aktivSektion = "henvendelser";
 
     private string brugerNavn = "";
+    private int adminId = 0;
 
     // Core.Models.Booking bruges eksplicit fordi Booking.razor-komponenten ellers skaber navnekollision
     private List<Core.Models.Booking>? henvendelser;
+
+    // =====================
+    // PROJEKTER STATE
+    // =====================
+
+    private List<Projekt>? projekter;
+
+    // Styrer om listen eller formularen vises i projekter-sektionen
+    private bool visFormular = false;
+
+    // True når man redigerer et eksisterende projekt, false når man opretter nyt
+    private bool erRedigering = false;
+
+    // Det projekt der aktuelt oprettes eller redigeres
+    private Projekt aktivProjekt = new();
+
+    private bool uploaderBilleder = false;
+    private string projektStatus = "";
 
     // Kører automatisk når siden indlæses
     protected override async Task OnInitializedAsync()
@@ -139,6 +280,7 @@
         // Henter brugeroplysninger fra LocalStorage
         var userRole = await LocalStorage.GetItemAsync<string>("userRole");
         brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
+        adminId = await LocalStorage.GetItemAsync<int>("userId");
 
         // Hvis brugeren ikke er admin sendes de tilbage til forsiden
         if (userRole != "admin")
@@ -149,6 +291,120 @@
 
         // Henter alle henvendelser fra API'et
         henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
+
+        // Henter alle projekter fra API'et
+        projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
+    }
+
+    // Skifter aktiv sektion og nulstiller formular-state
+    private void SkiftSektion(string sektion)
+    {
+        aktivSektion = sektion;
+        LukFormular();
+    }
+
+    // =====================
+    // PROJEKTER METODER
+    // =====================
+
+    // Åbner formularen til at oprette et nyt tomt projekt
+    private void VisOpretFormular()
+    {
+        aktivProjekt = new Projekt { BrugerId = adminId };
+        erRedigering = false;
+        projektStatus = "";
+        visFormular = true;
+    }
+
+    // Åbner formularen udfyldt med det valgte projekts data
+    private void VisRedigerFormular(Projekt p)
+    {
+        // Kopierer projektet så ændringer ikke vises i listen før man gemmer
+        aktivProjekt = new Projekt
+        {
+            Id = p.Id,
+            BrugerId = p.BrugerId,
+            Navn = p.Navn,
+            Beskrivelse = p.Beskrivelse,
+            År = p.År,
+            Billeder = new List<string>(p.Billeder),
+            Oprettelse = p.Oprettelse
+        };
+        erRedigering = true;
+        projektStatus = "";
+        visFormular = true;
+    }
+
+    // Lukker formularen og vender tilbage til listen
+    private void LukFormular()
+    {
+        visFormular = false;
+        projektStatus = "";
+    }
+
+    // Uploader valgte billedfiler til serveren og gemmer filnavnene på projektet
+    private async Task UploadBilleder(InputFileChangeEventArgs e)
+    {
+        uploaderBilleder = true;
+
+        foreach (var file in e.GetMultipleFiles())
+        {
+            var stream = file.OpenReadStream(maxAllowedSize: 10_000_000);
+            var (success, fileName) = await FileService.SendFile(file.Name, stream);
+
+            if (success)
+                aktivProjekt.Billeder.Add(fileName);
+        }
+
+        uploaderBilleder = false;
+    }
+
+    // Fjerner et billede fra projektet og sletter det fra databasen
+    private async Task FjernBillede(string fileName)
+    {
+        aktivProjekt.Billeder.Remove(fileName);
+        await FileService.DeleteFile(fileName);
+    }
+
+    // Gemmer projektet — POST ved opret, PUT ved rediger
+    private async Task GemProjekt()
+    {
+        if (erRedigering)
+        {
+            // Opdaterer det eksisterende projekt i databasen
+            await Http.PutAsJsonAsync($"api/projekt/{aktivProjekt.Id}", aktivProjekt);
+            projektStatus = "Projektet er opdateret.";
+        }
+        else
+        {
+            // Opretter et nyt projekt i databasen
+            await Http.PostAsJsonAsync("api/projekt", aktivProjekt);
+            projektStatus = "Projektet er oprettet.";
+        }
+
+        // Opdaterer listen så det nye/ændrede projekt vises med det samme
+        projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
+        LukFormular();
+    }
+
+    // Sletter et projekt og dets tilhørende billeder fra databasen
+    private async Task SletProjekt(int id)
+    {
+        var projekt = projekter?.FirstOrDefault(p => p.Id == id);
+
+        if (projekt != null)
+        {
+            // Sletter hvert billede fra MongoDB inden projektet slettes
+            foreach (var billede in projekt.Billeder)
+            {
+                await FileService.DeleteFile(billede);
+            }
+        }
+
+        await Http.DeleteAsync($"api/projekt/{id}");
+
+        // Opdaterer listen efter sletning
+        projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
     }
 
     // Logger brugeren ud og sender dem til forsiden
