@@ -1,0 +1,150 @@
+.detalje-loading {
+    padding: 48px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* PROJEKT HEADER */
+.detalje-header {
+    padding: 80px 9%;
+    background: #f9f8f5;
+    border-bottom: 1px solid #ddd;
+}
+
+.detalje-tilbage {
+    background: transparent;
+    border: none;
+    color: #888;
+    font-size: 12px;
+    cursor: pointer;
+    padding: 0;
+    letter-spacing: 0.05em;
+    margin-bottom: 32px;
+    display: block;
+}
+
+.detalje-tilbage:hover {
+    color: #333;
+}
+
+.detalje-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #888;
+    margin-bottom: 12px;
+}
+
+.detalje-titel {
+    font-size: 56px;
+    font-weight: 300;
+    color: #1a1a1a;
+    line-height: 1.1;
+    margin-bottom: 24px;
+}
+
+.detalje-beskrivelse {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555;
+    max-width: 600px;
+}
+
+/* =====================
+   BILLEDE SEKTIONER
+   Samme alternerende layout som projekter-oversigten
+   ===================== */
+
+.detalje-sektion {
+    background: #ffffff;
+    padding: 100px 0;
+}
+
+/* Hver anden sektion skifter baggrundsfarve og layout */
+.detalje-sektion.omvendt {
+    background: #f9f8f5;
+}
+
+.detalje-layout {
+    display: flex;
+    align-items: center;
+    padding-left: 8%;
+    padding-right: 6%;
+}
+
+/* Omvendt layout: billede til højre, tekst til venstre */
+.detalje-sektion.omvendt .detalje-layout {
+    flex-direction: row-reverse;
+    padding-left: 6%;
+    padding-right: 8%;
+}
+
+/* BILLEDE: ca. 60% af siden */
+.detalje-billede-wrapper {
+    width: 60%;
+    flex-shrink: 0;
+}
+
+.detalje-billede-wrapper img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    display: block;
+}
+
+/* TEKST: centreret vertikalt med billedets højde */
+.detalje-tekst {
+    flex: 1;
+    padding-left: 8%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.detalje-sektion.omvendt .detalje-tekst {
+    padding-left: 0;
+    padding-right: 8%;
+}
+
+.detalje-billede-nr {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: #bbb;
+    margin: 0;
+}
+
+.detalje-billede-beskrivelse {
+    font-size: 16px;
+    line-height: 1.8;
+    color: #555;
+    margin: 0;
+    max-width: 380px;
+}
+
+/* CTA SEKTION */
+.detalje-cta {
+    padding: 100px 9%;
+    background: #1a1a1a;
+    color: white;
+}
+
+.detalje-cta h2 {
+    font-size: 40px;
+    font-weight: 300;
+    margin-bottom: 32px;
+}
+
+.detalje-cta button {
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 14px 36px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    cursor: pointer;
+}
+
+.detalje-cta button:hover {
+    background: white;
+    color: #1a1a1a;
+    transition: background 0.2s, color 0.2s;
+}

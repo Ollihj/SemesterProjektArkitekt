@@ -250,6 +250,24 @@
     gap: 12px;
 }
 
+/* Et billede-item indeholder thumbnail, slet-knap og beskrivelsesfelt under hinanden */
+.admin-billede-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #eee;
+}
+
+.admin-billede-beskrivelse {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    font-size: 13px;
+    width: 100%;
+    font-family: inherit;
+}
+
 .admin-billede-thumb {
     position: relative;
     width: 100px;

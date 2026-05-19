@@ -142,7 +142,7 @@
                                 <div class="admin-projekt-billede">
                                     @if (p.Billeder.Any())
                                     {
-                                        <img src="@FileService.GetImageUrl(p.Billeder.First())" alt="@p.Navn" />
+                                        <img src="@FileService.GetImageUrl(p.Billeder.First().FileName)" alt="@p.Navn" />
                                     }
                                     else
                                     {
@@ -191,25 +191,30 @@
                         <input type="number" @bind="aktivProjekt.År" placeholder="2024" />
                     </div>
 
-                    <!-- Eksisterende billeder — vises kun ved redigering -->
-                    @if (erRedigering && aktivProjekt.Billeder.Any())
+                    <!-- Billeder med beskrivelse — viser alle uploadede billeder med et beskrivelsesfelt under hvert -->
+                    @if (aktivProjekt.Billeder.Any())
                     {
                         <div class="admin-felt">
-                            <label>EKSISTERENDE BILLEDER</label>
-                            <div class="admin-billeder-grid">
-                                @foreach (var billede in aktivProjekt.Billeder.ToList())
-                                {
+                            <label>BILLEDER</label>
+                            @foreach (var billede in aktivProjekt.Billeder.ToList())
+                            {
+                                <div class="admin-billede-item">
                                     <div class="admin-billede-thumb">
-                                        <img src="@FileService.GetImageUrl(billede)" alt="billede" />
+                                        <img src="@FileService.GetImageUrl(billede.FileName)" alt="billede" />
                                         <!-- Slet-knap fjerner billedet fra projektet og databasen -->
                                         <button class="admin-billede-slet" @onclick="() => FjernBillede(billede)">×</button>
                                     </div>
-                                }
-                            </div>
+                                    <!-- Beskrivelsesfelt til hvert enkelt billede -->
+                                    <input type="text"
+                                           class="admin-billede-beskrivelse"
+                                           @bind="billede.Beskrivelse"
+                                           placeholder="Beskriv dette billede..." />
+                                </div>
+                            }
                         </div>
                     }
 
-                    <!-- Upload nye billeder — accept="image/*" begrænser til billedfiler -->
+                    <!-- Upload nye billeder — hvert nyt billede tilføjes til listen ovenfor -->
                     <div class="admin-felt">
                         <label>TILFØJ BILLEDER</label>
                         <InputFile OnChange="UploadBilleder" multiple accept="image/*" />
@@ -327,7 +332,7 @@
             Navn = p.Navn,
             Beskrivelse = p.Beskrivelse,
             År = p.År,
-            Billeder = new List<string>(p.Billeder),
+            Billeder = p.Billeder.Select(b => new BilledeItem { FileName = b.FileName, Beskrivelse = b.Beskrivelse }).ToList(),
             Oprettelse = p.Oprettelse
         };
         erRedigering = true;
@@ -352,18 +357,19 @@
             var stream = file.OpenReadStream(maxAllowedSize: 10_000_000);
             var (success, fileName) = await FileService.SendFile(file.Name, stream);
 
+            // Opretter et BilledeItem med filnavnet — beskrivelsen kan udfyldes i formularen
             if (success)
-                aktivProjekt.Billeder.Add(fileName);
+                aktivProjekt.Billeder.Add(new BilledeItem { FileName = fileName });
         }
 
         uploaderBilleder = false;
     }
 
     // Fjerner et billede fra projektet og sletter det fra databasen
-    private async Task FjernBillede(string fileName)
+    private async Task FjernBillede(BilledeItem billede)
     {
-        aktivProjekt.Billeder.Remove(fileName);
-        await FileService.DeleteFile(fileName);
+        aktivProjekt.Billeder.Remove(billede);
+        await FileService.DeleteFile(billede.FileName);
     }
 
     // Gemmer projektet — POST ved opret, PUT ved rediger
@@ -397,7 +403,7 @@
             // Sletter hvert billede fra MongoDB inden projektet slettes
             foreach (var billede in projekt.Billeder)
             {
-                await FileService.DeleteFile(billede);
+                await FileService.DeleteFile(billede.FileName);
             }
         }
 

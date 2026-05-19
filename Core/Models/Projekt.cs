@@ -7,7 +7,7 @@ public class Projekt
     public string? Navn { get; set; }
     public string? Beskrivelse { get; set; }
     public int År { get; set; }
-    // Liste af filnavne der bruges til at hente billederne fra serveren
-    public List<string> Billeder { get; set; } = new();
+    // Hvert billede har sit eget filnavn og en valgfri beskrivelse
+    public List<BilledeItem> Billeder { get; set; } = new();
     public DateTime Oprettelse { get; set; }
 }

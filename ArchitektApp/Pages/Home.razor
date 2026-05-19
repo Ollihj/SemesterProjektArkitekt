@@ -89,7 +89,7 @@
                         @if (projekt.Billeder.Any())
                         {
                             <!-- Henter det første billede fra serveren via download-endpointet -->
-                            <img src="@($"http://localhost:5000/api/file/download/{projekt.Billeder.First()}")" alt="@projekt.Navn" />
+                            <img src="@($"http://localhost:5000/api/file/download/{projekt.Billeder.First().FileName}")" alt="@projekt.Navn" />
                         }
                         else
                         {

@@ -1,0 +1,114 @@
+@page "/projekter/{Id:int}"
+@using Core.Models
+@using Blazored.LocalStorage
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
+@inject HttpClient Http
+
+<PageTitle>@(projekt?.Navn ?? "Projekt") — Studio Arkitekt</PageTitle>
+
+<!-- Navigation -->
+<nav class="home-nav">
+    <span class="home-logo">JOHAN BERTELSEN, ARKITEKT MAA</span>
+    <div class="home-nav-links">
+        <NavLink href="/" Match="NavLinkMatch.All">FORSIDE</NavLink>
+        <NavLink href="/projekter">PROJEKTER</NavLink>
+        <NavLink href="/booking">KONTAKT</NavLink>
+    </div>
+    @if (erLoggetInd)
+    {
+        <div class="home-nav-right">
+            <button @onclick='() => Navigation.NavigateTo("/admin")'>DASHBOARD</button>
+            <span>@brugerNavn</span>
+            <button @onclick="LogUd">LOG UD</button>
+        </div>
+    }
+    else
+    {
+        <button @onclick='() => Navigation.NavigateTo("/LoginPage")'>LOG IND</button>
+    }
+</nav>
+
+@if (projekt == null)
+{
+    <p class="detalje-loading">Henter projekt...</p>
+}
+else
+{
+    <!-- PROJEKT HEADER -->
+    <div class="detalje-header">
+        <button class="detalje-tilbage" @onclick='() => Navigation.NavigateTo("/projekter")'>← Tilbage til projekter</button>
+        <p class="detalje-label">@projekt.År</p>
+        <h1 class="detalje-titel">@projekt.Navn</h1>
+        @if (!string.IsNullOrEmpty(projekt.Beskrivelse))
+        {
+            <p class="detalje-beskrivelse">@projekt.Beskrivelse</p>
+        }
+    </div>
+
+    <!-- BILLEDER MED BESKRIVELSE
+         Hvert billede vises i alternerende layout — billede og tekst side om side
+         Samme princip som projekter-oversigten -->
+    @if (projekt.Billeder.Any())
+    {
+        @foreach (var (billede, index) in projekt.Billeder.Select((b, i) => (b, i)))
+        {
+            <!-- Hver anden sektion spejlvender layoutet med klassen "omvendt" -->
+            <section class="detalje-sektion @(index % 2 == 1 ? "omvendt" : "")">
+                <div class="detalje-layout">
+
+                    <!-- BILLEDE -->
+                    <div class="detalje-billede-wrapper">
+                        <img src="@($"http://localhost:5000/api/file/download/{billede.FileName}")"
+                             alt="@projekt.Navn" />
+                    </div>
+
+                    <!-- TEKST — vises kun hvis billedet har en beskrivelse -->
+                    <div class="detalje-tekst">
+                        <p class="detalje-billede-nr">@((index + 1).ToString("D2"))</p>
+                        @if (!string.IsNullOrEmpty(billede.Beskrivelse))
+                        {
+                            <p class="detalje-billede-beskrivelse">@billede.Beskrivelse</p>
+                        }
+                    </div>
+
+                </div>
+            </section>
+        }
+    }
+
+    <!-- CTA SEKTION -->
+    <section class="detalje-cta">
+        <h2>Har du et lignende projekt?</h2>
+        <button @onclick='() => Navigation.NavigateTo("/booking")'>BOOK KONSULTATION →</button>
+    </section>
+}
+
+@code {
+    // Id hentes automatisk fra URL'en — f.eks. /projekter/3
+    [Parameter] public int Id { get; set; }
+
+    private bool erLoggetInd = false;
+    private string brugerNavn = "";
+    private Projekt? projekt;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Tjekker om brugeren er logget ind for at vise dashboard-knappen
+        var userId = await LocalStorage.GetItemAsync<int?>("userId");
+        brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
+        erLoggetInd = userId != null && userId > 0;
+
+        // Henter det specifikke projekt baseret på Id fra URL'en
+        projekt = await Http.GetFromJsonAsync<Projekt>($"api/projekt/{Id}");
+    }
+
+    private async Task LogUd()
+    {
+        await LocalStorage.RemoveItemAsync("userId");
+        await LocalStorage.RemoveItemAsync("userName");
+        await LocalStorage.RemoveItemAsync("userRole");
+        erLoggetInd = false;
+        brugerNavn = "";
+    }
+}
