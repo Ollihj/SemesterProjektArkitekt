@@ -533,3 +533,9 @@
 .admin-tabel tr:hover td {
     background: #fafafa;
 }
+
+.admin-henvendelse-knapper {
+    display: flex;
+    gap: 8px;
+    white-space: nowrap;
+}

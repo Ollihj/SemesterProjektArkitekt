@@ -77,6 +77,7 @@
                             <th>TELEFON</th>
                             <th>ØNSKET DATO</th>
                             <th>BESKRIVELSE</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -86,9 +87,14 @@
                                 <td>@h.Kundenavn</td>
                                 <td>@h.Kundemail</td>
                                 <td>@h.KundeTlf</td>
-                                <!-- Formaterer datoen til dansk format dag/måned/år og klokkeslæt -->
                                 <td>@h.OensketDato.ToString("dd/MM/yyyy HH:mm")</td>
                                 <td>@h.Beskrivelse</td>
+                                <td>
+                                    <div class="admin-henvendelse-knapper">
+                                        <button class="admin-knap" @onclick="() => AccepterHenvendelse(h)">Accepter</button>
+                                        <button class="admin-knap-fare" @onclick="() => AfvisHenvendelse(h.Id)">Afvis</button>
+                                    </div>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -484,6 +490,39 @@
     {
         aktivSektion = sektion;
         LukFormular();
+    }
+
+    // =====================
+    // HENVENDELSER METODER
+    // =====================
+
+    // Accepterer en henvendelse: opretter en aftale i kalenderen og sletter bookingen
+    private async Task AccepterHenvendelse(Core.Models.Booking h)
+    {
+        var aftale = new Aftale
+        {
+            BrugerId = adminId,
+            Titel = $"Møde med {h.Kundenavn}",
+            StartTid = DateTime.SpecifyKind(h.OensketDato, DateTimeKind.Utc),
+            SlutTid = DateTime.SpecifyKind(h.OensketDato.AddHours(1), DateTimeKind.Utc),
+            Beskrivelse = h.Beskrivelse,
+            Type = "booking",
+            Oprettelse = DateTime.UtcNow
+        };
+
+        await Http.PostAsJsonAsync("api/aftale", aftale);
+        await Http.DeleteAsync($"api/booking/{h.Id}");
+
+        henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
+        aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
+    }
+
+    // Afviser en henvendelse: sletter bookingen uden at oprette en aftale
+    private async Task AfvisHenvendelse(int id)
+    {
+        henvendelser?.RemoveAll(h => h.Id == id);
+        await Http.DeleteAsync($"api/booking/{id}");
+        henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
     }
 
     // =====================
