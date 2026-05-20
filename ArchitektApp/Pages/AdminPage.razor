@@ -230,7 +230,11 @@
                         }
                     </div>
 
-                    <!-- Statusbesked der vises efter gem forsøg -->
+                    @if (!string.IsNullOrEmpty(projektFejl))
+                    {
+                        <p class="admin-fejl">@projektFejl</p>
+                    }
+
                     @if (!string.IsNullOrEmpty(projektStatus))
                     {
                         <p class="admin-status">@projektStatus</p>
@@ -429,6 +433,7 @@
 
     private bool uploaderBilleder = false;
     private string projektStatus = "";
+    private string projektFejl = "";
 
     // =====================
     // KALENDER STATE
@@ -542,6 +547,7 @@
         aktivProjekt = new Projekt { BrugerId = adminId };
         erRedigering = false;
         projektStatus = "";
+        projektFejl = "";
         visFormular = true;
     }
 
@@ -569,6 +575,7 @@
     {
         visFormular = false;
         projektStatus = "";
+        projektFejl = "";
     }
 
     // Uploader valgte billedfiler til serveren og gemmer filnavnene på projektet
@@ -599,6 +606,20 @@
     // Gemmer projektet — POST ved opret, PUT ved rediger
     private async Task GemProjekt()
     {
+        projektFejl = "";
+
+        if (string.IsNullOrWhiteSpace(aktivProjekt.Navn))
+        {
+            projektFejl = "Projektet skal have et navn.";
+            return;
+        }
+
+        if (!aktivProjekt.Billeder.Any())
+        {
+            projektFejl = "Projektet skal have mindst ét billede.";
+            return;
+        }
+
         if (erRedigering)
         {
             // Opdaterer det eksisterende projekt i databasen

@@ -309,6 +309,12 @@
     margin-bottom: 16px;
 }
 
+.admin-fejl {
+    font-size: 13px;
+    color: #e05555;
+    margin-bottom: 16px;
+}
+
 .admin-formular-knapper {
     display: flex;
     gap: 12px;
