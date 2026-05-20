@@ -614,6 +614,12 @@
             return;
         }
 
+        if (aktivProjekt.År <= 0)
+        {
+            projektFejl = "Projektet skal have et årstal.";
+            return;
+        }
+
         if (!aktivProjekt.Billeder.Any())
         {
             projektFejl = "Projektet skal have mindst ét billede.";
