@@ -628,16 +628,22 @@
     private bool ErDagBlokeret(DateTime dag) =>
         blokereteDatoer.Any(b => b.StartTid.Date == dag.Date);
 
-    // Blokerer en dag ved at oprette en Blokeret-post der dækker hele dagen
+    // Blokerer en dag ved at oprette en Blokeret-post der dækker hele dagen.
+    // DateTimeKind.Utc forhindrer MongoDB i at fortolke datoen som lokal tid og gemme den forkert.
     private async Task BlokerDag(DateTime dag)
     {
+        var utcDato = DateTime.SpecifyKind(dag.Date, DateTimeKind.Utc);
         var blokeret = new Core.Models.Blokeret
         {
             BrugerId = adminId,
-            StartTid = dag.Date,
-            SlutTid = dag.Date.AddDays(1).AddSeconds(-1),
+            StartTid = utcDato,
+            SlutTid = utcDato.AddDays(1).AddSeconds(-1),
             Type = "dag"
         };
+
+        // Tilføj til listen med det samme så UI opdateres øjeblikkeligt
+        blokereteDatoer.Add(blokeret);
+
         await Http.PostAsJsonAsync("api/blokeret", blokeret);
         blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
     }
@@ -648,6 +654,9 @@
         var blokeret = blokereteDatoer.FirstOrDefault(b => b.StartTid.Date == dag.Date);
         if (blokeret != null)
         {
+            // Fjern fra listen med det samme så UI opdateres øjeblikkeligt
+            blokereteDatoer.Remove(blokeret);
+
             await Http.DeleteAsync($"api/blokeret/{blokeret.Id}");
             blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
         }
