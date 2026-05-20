@@ -120,7 +120,7 @@
             @if (visOpretMedarbejder)
             {
                 <div class="admin-formular">
-                    <h3 class="admin-formular-titel">Ny medarbejder</h3>
+                    <h3 class="admin-formular-titel">@(erRedigeringMedarbejder ? "Rediger medarbejder" : "Ny medarbejder")</h3>
 
                     <div class="admin-felt">
                         <label>NAVN</label>
@@ -153,7 +153,7 @@
                     }
 
                     <div class="admin-formular-knapper">
-                        <button class="admin-knap" @onclick="OpretMedarbejder">Opret medarbejder</button>
+                        <button class="admin-knap" @onclick="GemMedarbejder">@(erRedigeringMedarbejder ? "Gem ændringer" : "Opret medarbejder")</button>
                         <button class="admin-knap-sek" @onclick="LukMedarbejderFormular">Annuller</button>
                     </div>
                 </div>
@@ -183,7 +183,10 @@
                                 <td>@m.Email</td>
                                 <td>@(m.Telefon ?? "—")</td>
                                 <td>
-                                    <button class="admin-knap-fare" @onclick="() => SletMedarbejder(m.Id)">Slet</button>
+                                    <div class="admin-henvendelse-knapper">
+                                        <button class="admin-knap-sek" @onclick="() => VisRedigerMedarbejderFormular(m)">Rediger</button>
+                                        <button class="admin-knap-fare" @onclick="() => SletMedarbejder(m.Id)">Slet</button>
+                                    </div>
                                 </td>
                             </tr>
                         }
@@ -503,6 +506,7 @@
 
     private List<Bruger> medarbejdere = new();
     private bool visOpretMedarbejder = false;
+    private bool erRedigeringMedarbejder = false;
     private Bruger nyMedarbejder = new();
     private string medarbejderStatus = "";
     private string medarbejderFejl = "";
@@ -639,6 +643,24 @@
     private void VisOpretMedarbejderFormular()
     {
         nyMedarbejder = new Bruger { Rolle = "medarbejder" };
+        erRedigeringMedarbejder = false;
+        medarbejderFejl = "";
+        medarbejderStatus = "";
+        visOpretMedarbejder = true;
+    }
+
+    private void VisRedigerMedarbejderFormular(Bruger m)
+    {
+        nyMedarbejder = new Bruger
+        {
+            Id = m.Id,
+            Navn = m.Navn,
+            Email = m.Email,
+            Password = m.Password,
+            Telefon = m.Telefon,
+            Rolle = "medarbejder"
+        };
+        erRedigeringMedarbejder = true;
         medarbejderFejl = "";
         medarbejderStatus = "";
         visOpretMedarbejder = true;
@@ -647,11 +669,12 @@
     private void LukMedarbejderFormular()
     {
         visOpretMedarbejder = false;
+        erRedigeringMedarbejder = false;
         medarbejderFejl = "";
         medarbejderStatus = "";
     }
 
-    private async Task OpretMedarbejder()
+    private async Task GemMedarbejder()
     {
         medarbejderFejl = "";
 
@@ -674,7 +697,11 @@
         }
 
         nyMedarbejder.Rolle = "medarbejder";
-        await Http.PostAsJsonAsync("api/bruger", nyMedarbejder);
+
+        if (erRedigeringMedarbejder)
+            await Http.PutAsJsonAsync($"api/bruger/{nyMedarbejder.Id}", nyMedarbejder);
+        else
+            await Http.PostAsJsonAsync("api/bruger", nyMedarbejder);
 
         var alleBrugere = await Http.GetFromJsonAsync<List<Bruger>>("api/bruger") ?? new();
         medarbejdere = alleBrugere.Where(b => b.Rolle == "medarbejder").ToList();
