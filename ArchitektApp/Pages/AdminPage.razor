@@ -496,7 +496,7 @@
     // HENVENDELSER METODER
     // =====================
 
-    // Accepterer en henvendelse: opretter en aftale i kalenderen og sletter bookingen
+    // Accepterer en henvendelse: opretter en aftale i kalenderen, sletter bookingen og skifter til kalender-sektionen
     private async Task AccepterHenvendelse(Core.Models.Booking h)
     {
         var aftale = new Aftale
@@ -515,6 +515,13 @@
 
         henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
         aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
+
+        // Naviger til kalender-sektionen og vis måneden for den accepterede aftale
+        kalenderMåned = h.OensketDato.Month;
+        kalenderÅr = h.OensketDato.Year;
+        valgtDag = h.OensketDato;
+        visOpretAftale = false;
+        aktivSektion = "kalender";
     }
 
     // Afviser en henvendelse: sletter bookingen uden at oprette en aftale
@@ -659,13 +666,15 @@
         valgtDag = null;
     }
 
-    // Returnerer true hvis der er aftaler på den given dato
-    private bool KalenderHarAftaler(DateTime dag) =>
-        aftaler.Any(a => a.StartTid.Date == dag.Date);
+    // Sammenligner kun år/måned/dag for at undgå fejl når DateTimeKind er forskellig (Utc vs Unspecified)
+    private static bool SammeDag(DateTime a, DateTime b) =>
+        a.Year == b.Year && a.Month == b.Month && a.Day == b.Day;
 
-    // Returnerer true hvis datoen er blokeret
+    private bool KalenderHarAftaler(DateTime dag) =>
+        aftaler.Any(a => SammeDag(a.StartTid, dag));
+
     private bool ErDagBlokeret(DateTime dag) =>
-        blokereteDatoer.Any(b => b.StartTid.Date == dag.Date);
+        blokereteDatoer.Any(b => SammeDag(b.StartTid, dag));
 
     // Blokerer en dag ved at oprette en Blokeret-post der dækker hele dagen.
     // DateTimeKind.Utc forhindrer MongoDB i at fortolke datoen som lokal tid og gemme den forkert.
@@ -701,9 +710,8 @@
         }
     }
 
-    // Returnerer alle aftaler for en given dato
     private List<Aftale> KalenderAftalerForDag(DateTime dag) =>
-        aftaler.Where(a => a.StartTid.Date == dag.Date).ToList();
+        aftaler.Where(a => SammeDag(a.StartTid, dag)).ToList();
 
     // Sætter den valgte dag og nulstiller opret-formularen
     private void VælgDag(DateTime dag)
