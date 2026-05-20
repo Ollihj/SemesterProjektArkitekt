@@ -103,12 +103,93 @@
         }
 
         <!-- =====================
-             MEDARBEJDERE SEKTION (ikke implementeret endnu)
+             MEDARBEJDERE SEKTION
+             Liste over medarbejdere med mulighed for at oprette og slette
              ===================== -->
         @if (aktivSektion == "medarbejdere")
         {
-            <h2 class="admin-sektion-titel">Medarbejdere</h2>
-            <p class="admin-tom">Kommer snart.</p>
+            <div class="admin-sektion-header">
+                <h2 class="admin-sektion-titel">Medarbejdere</h2>
+                @if (!visOpretMedarbejder)
+                {
+                    <button class="admin-knap" @onclick="VisOpretMedarbejderFormular">+ Ny medarbejder</button>
+                }
+            </div>
+
+            <!-- OPRET FORMULAR -->
+            @if (visOpretMedarbejder)
+            {
+                <div class="admin-formular">
+                    <h3 class="admin-formular-titel">Ny medarbejder</h3>
+
+                    <div class="admin-felt">
+                        <label>NAVN</label>
+                        <input type="text" @bind="nyMedarbejder.Navn" placeholder="Fulde navn" />
+                    </div>
+
+                    <div class="admin-felt">
+                        <label>EMAIL</label>
+                        <input type="email" @bind="nyMedarbejder.Email" placeholder="email@eksempel.dk" />
+                    </div>
+
+                    <div class="admin-felt">
+                        <label>KODEORD</label>
+                        <input type="password" @bind="nyMedarbejder.Password" placeholder="Kodeord" />
+                    </div>
+
+                    <div class="admin-felt">
+                        <label>TELEFON</label>
+                        <input type="text" @bind="nyMedarbejder.Telefon" placeholder="+45" />
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(medarbejderFejl))
+                    {
+                        <p class="admin-fejl">@medarbejderFejl</p>
+                    }
+
+                    @if (!string.IsNullOrEmpty(medarbejderStatus))
+                    {
+                        <p class="admin-status">@medarbejderStatus</p>
+                    }
+
+                    <div class="admin-formular-knapper">
+                        <button class="admin-knap" @onclick="OpretMedarbejder">Opret medarbejder</button>
+                        <button class="admin-knap-sek" @onclick="LukMedarbejderFormular">Annuller</button>
+                    </div>
+                </div>
+            }
+
+            <!-- LISTE -->
+            @if (medarbejdere.Count == 0)
+            {
+                <p class="admin-tom">Ingen medarbejdere endnu.</p>
+            }
+            else
+            {
+                <table class="admin-tabel">
+                    <thead>
+                        <tr>
+                            <th>NAVN</th>
+                            <th>EMAIL</th>
+                            <th>TELEFON</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var m in medarbejdere)
+                        {
+                            <tr>
+                                <td>@m.Navn</td>
+                                <td>@m.Email</td>
+                                <td>@(m.Telefon ?? "—")</td>
+                                <td>
+                                    <button class="admin-knap-fare" @onclick="() => SletMedarbejder(m.Id)">Slet</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
         }
 
         <!-- =====================
@@ -417,6 +498,16 @@
     private List<Core.Models.Booking>? henvendelser;
 
     // =====================
+    // MEDARBEJDERE STATE
+    // =====================
+
+    private List<Bruger> medarbejdere = new();
+    private bool visOpretMedarbejder = false;
+    private Bruger nyMedarbejder = new();
+    private string medarbejderStatus = "";
+    private string medarbejderFejl = "";
+
+    // =====================
     // PROJEKTER STATE
     // =====================
 
@@ -480,6 +571,10 @@
         // Henter alle henvendelser fra API'et
         henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
 
+        // Henter medarbejdere (brugere med rollen "medarbejder")
+        var alleBrugere = await Http.GetFromJsonAsync<List<Bruger>>("api/bruger") ?? new();
+        medarbejdere = alleBrugere.Where(b => b.Rolle == "medarbejder").ToList();
+
         // Henter alle projekter fra API'et
         projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
 
@@ -535,6 +630,65 @@
         henvendelser?.RemoveAll(h => h.Id == id);
         await Http.DeleteAsync($"api/booking/{id}");
         henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
+    }
+
+    // =====================
+    // MEDARBEJDERE METODER
+    // =====================
+
+    private void VisOpretMedarbejderFormular()
+    {
+        nyMedarbejder = new Bruger { Rolle = "medarbejder" };
+        medarbejderFejl = "";
+        medarbejderStatus = "";
+        visOpretMedarbejder = true;
+    }
+
+    private void LukMedarbejderFormular()
+    {
+        visOpretMedarbejder = false;
+        medarbejderFejl = "";
+        medarbejderStatus = "";
+    }
+
+    private async Task OpretMedarbejder()
+    {
+        medarbejderFejl = "";
+
+        if (string.IsNullOrWhiteSpace(nyMedarbejder.Navn))
+        {
+            medarbejderFejl = "Navn er påkrævet.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(nyMedarbejder.Email))
+        {
+            medarbejderFejl = "Email er påkrævet.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(nyMedarbejder.Password))
+        {
+            medarbejderFejl = "Kodeord er påkrævet.";
+            return;
+        }
+
+        nyMedarbejder.Rolle = "medarbejder";
+        await Http.PostAsJsonAsync("api/bruger", nyMedarbejder);
+
+        var alleBrugere = await Http.GetFromJsonAsync<List<Bruger>>("api/bruger") ?? new();
+        medarbejdere = alleBrugere.Where(b => b.Rolle == "medarbejder").ToList();
+
+        LukMedarbejderFormular();
+    }
+
+    private async Task SletMedarbejder(int id)
+    {
+        medarbejdere.RemoveAll(m => m.Id == id);
+        await Http.DeleteAsync($"api/bruger/{id}");
+
+        var alleBrugere = await Http.GetFromJsonAsync<List<Bruger>>("api/bruger") ?? new();
+        medarbejdere = alleBrugere.Where(b => b.Rolle == "medarbejder").ToList();
     }
 
     // =====================
