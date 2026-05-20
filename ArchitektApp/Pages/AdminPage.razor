@@ -240,12 +240,157 @@
         }
 
         <!-- =====================
-             KALENDER SEKTION (ikke implementeret endnu)
+             KALENDER SEKTION
+             Månedsoverblik med indikator på dage der har aftaler
+             Klik på dag viser aftalerne for den dag og giver mulighed for at oprette ny
              ===================== -->
         @if (aktivSektion == "kalender")
         {
-            <h2 class="admin-sektion-titel">Kalender</h2>
-            <p class="admin-tom">Kommer snart.</p>
+            <div class="admin-sektion-header">
+                <h2 class="admin-sektion-titel">Kalender</h2>
+            </div>
+
+            <!-- MÅNEDS NAVIGATION -->
+            <div class="kalender-nav">
+                <button class="kalender-nav-knap" @onclick="ForrigeMåned">←</button>
+                <span class="kalender-nav-titel">
+                    @(new DateTime(kalenderÅr, kalenderMåned, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))
+                </span>
+                <button class="kalender-nav-knap" @onclick="NæsteMåned">→</button>
+            </div>
+
+            <!-- KALENDER GRID
+                 7 kolonner — man til søn
+                 Tomme celler tilføjes før den 1. dag i måneden -->
+            <div class="kalender-grid">
+
+                <!-- Ugedags-headers -->
+                <div class="kalender-dag-header">Man</div>
+                <div class="kalender-dag-header">Tir</div>
+                <div class="kalender-dag-header">Ons</div>
+                <div class="kalender-dag-header">Tor</div>
+                <div class="kalender-dag-header">Fre</div>
+                <div class="kalender-dag-header">Lør</div>
+                <div class="kalender-dag-header">Søn</div>
+
+                @{
+                    // Beregner hvilken ugedag den 1. i måneden falder på (mandag = 0)
+                    var førsteDag = new DateTime(kalenderÅr, kalenderMåned, 1);
+                    var offset = ((int)førsteDag.DayOfWeek - 1 + 7) % 7;
+                    var dageIMåned = DateTime.DaysInMonth(kalenderÅr, kalenderMåned);
+                }
+
+                <!-- Tomme celler inden månedens første dag -->
+                @for (int i = 0; i < offset; i++)
+                {
+                    <div class="kalender-celle tom"></div>
+                }
+
+                <!-- En celle per dag i måneden -->
+                @for (int d = 1; d <= dageIMåned; d++)
+                {
+                    var dato = new DateTime(kalenderÅr, kalenderMåned, d);
+                    var harAftaler = KalenderHarAftaler(dato);
+                    var erValgt = valgtDag?.Date == dato.Date;
+                    var erIdag = dato.Date == DateTime.Today;
+                    var erBlokeret = ErDagBlokeret(dato);
+
+                    <div class="kalender-celle @(erValgt ? "valgt" : "") @(erIdag ? "idag" : "") @(erBlokeret ? "blokeret" : "")"
+                         @onclick="() => VælgDag(dato)">
+                        <span class="kalender-dag-nr">@d</span>
+                        @if (harAftaler)
+                        {
+                            <!-- Lille prik der indikerer at der er aftaler denne dag -->
+                            <div class="kalender-indikator"></div>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- VALGT DAG PANEL
+                 Vises når man klikker på en dag — lister aftalerne og giver mulighed for at oprette ny -->
+            @if (valgtDag != null)
+            {
+                var dagAftaler = KalenderAftalerForDag(valgtDag.Value);
+
+                <div class="kalender-dag-panel">
+                    <div class="kalender-dag-panel-header">
+                        <h3>@(valgtDag.Value.ToString("dddd d. MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))</h3>
+                        <div style="display:flex;gap:8px;">
+                            @if (ErDagBlokeret(valgtDag.Value))
+                            {
+                                <button class="admin-knap-sek" @onclick="() => FjernBlokering(valgtDag.Value)">Fjern blokering</button>
+                            }
+                            else
+                            {
+                                <button class="admin-knap-fare" @onclick="() => BlokerDag(valgtDag.Value)">Bloker dato</button>
+                            }
+                            <button class="admin-knap" @onclick="VisOpretAftaleForm">+ Ny aftale</button>
+                        </div>
+                    </div>
+
+                    @if (dagAftaler.Count == 0)
+                    {
+                        <p class="admin-tom">Ingen aftaler denne dag.</p>
+                    }
+                    else
+                    {
+                        <!-- Aftalerne for den valgte dag sorteret efter starttidspunkt -->
+                        @foreach (var a in dagAftaler.OrderBy(a => a.StartTid))
+                        {
+                            <div class="kalender-aftale-item">
+                                <div class="kalender-aftale-tid">
+                                    @a.StartTid.ToString("HH:mm") — @a.SlutTid.ToString("HH:mm")
+                                </div>
+                                <div class="kalender-aftale-info">
+                                    <p class="kalender-aftale-titel">@a.Titel</p>
+                                    @if (!string.IsNullOrEmpty(a.Beskrivelse))
+                                    {
+                                        <p class="kalender-aftale-beskrivelse">@a.Beskrivelse</p>
+                                    }
+                                </div>
+                                <button class="admin-knap-fare" @onclick="() => SletAftale(a.Id)">Slet</button>
+                            </div>
+                        }
+                    }
+
+                    <!-- OPRET AFTALE FORMULAR — vises når man trykker "+ Ny aftale" -->
+                    @if (visOpretAftale)
+                    {
+                        <div class="admin-formular kalender-formular">
+                            <h3 class="admin-formular-titel">Ny aftale</h3>
+
+                            <div class="admin-felt">
+                                <label>TITEL</label>
+                                <input type="text" @bind="nyAftale.Titel" placeholder="Aftaletitel" />
+                            </div>
+
+                            <!-- Start og slut vises side om side -->
+                            <div class="kalender-tider">
+                                <div class="admin-felt">
+                                    <label>START</label>
+                                    <input type="time" @bind="nyAftaleStartTid" />
+                                </div>
+                                <div class="admin-felt">
+                                    <label>SLUT</label>
+                                    <input type="time" @bind="nyAftaleSlutTid" />
+                                </div>
+                            </div>
+
+                            <div class="admin-felt">
+                                <label>BESKRIVELSE</label>
+                                <textarea @bind="nyAftale.Beskrivelse" rows="3"
+                                          placeholder="Beskriv aftalen..."></textarea>
+                            </div>
+
+                            <div class="admin-formular-knapper">
+                                <button class="admin-knap" @onclick="GemAftale">Gem aftale</button>
+                                <button class="admin-knap-sek" @onclick='() => visOpretAftale = false'>Annuller</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         }
 
     </main>
@@ -279,6 +424,33 @@
     private bool uploaderBilleder = false;
     private string projektStatus = "";
 
+    // =====================
+    // KALENDER STATE
+    // =====================
+
+    // Den måned og det år der vises i kalenderen — starter på den aktuelle måned
+    private int kalenderMåned = DateTime.Now.Month;
+    private int kalenderÅr = DateTime.Now.Year;
+
+    // Liste over adminens egne aftaler
+    private List<Aftale> aftaler = new();
+
+    // Liste over blokerede datoer
+    private List<Core.Models.Blokeret> blokereteDatoer = new();
+
+    // Den dag der er klikket på — null hvis ingen dag er valgt
+    private DateTime? valgtDag = null;
+
+    // Styrer om opret-formularen vises under den valgte dag
+    private bool visOpretAftale = false;
+
+    // Den nye aftale der er ved at blive oprettet
+    private Aftale nyAftale = new();
+
+    // Separate tidsvariabler fordi Blazor binder type="time" til TimeOnly
+    private TimeOnly nyAftaleStartTid = new TimeOnly(9, 0);
+    private TimeOnly nyAftaleSlutTid = new TimeOnly(10, 0);
+
     // Kører automatisk når siden indlæses
     protected override async Task OnInitializedAsync()
     {
@@ -299,6 +471,12 @@
 
         // Henter alle projekter fra API'et
         projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
+
+        // Henter adminens egne aftaler baseret på adminId
+        aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
+
+        // Henter alle blokerede datoer
+        blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
     }
 
     // Skifter aktiv sektion og nulstiller formular-state
@@ -420,5 +598,102 @@
         await LocalStorage.RemoveItemAsync("userName");
         await LocalStorage.RemoveItemAsync("userRole");
         Navigation.NavigateTo("/");
+    }
+
+    // =====================
+    // KALENDER METODER
+    // =====================
+
+    // Går en måned tilbage — håndterer årsskifte
+    private void ForrigeMåned()
+    {
+        if (kalenderMåned == 1) { kalenderMåned = 12; kalenderÅr--; }
+        else kalenderMåned--;
+        valgtDag = null;
+    }
+
+    // Går en måned frem — håndterer årsskifte
+    private void NæsteMåned()
+    {
+        if (kalenderMåned == 12) { kalenderMåned = 1; kalenderÅr++; }
+        else kalenderMåned++;
+        valgtDag = null;
+    }
+
+    // Returnerer true hvis der er aftaler på den given dato
+    private bool KalenderHarAftaler(DateTime dag) =>
+        aftaler.Any(a => a.StartTid.Date == dag.Date);
+
+    // Returnerer true hvis datoen er blokeret
+    private bool ErDagBlokeret(DateTime dag) =>
+        blokereteDatoer.Any(b => b.StartTid.Date == dag.Date);
+
+    // Blokerer en dag ved at oprette en Blokeret-post der dækker hele dagen
+    private async Task BlokerDag(DateTime dag)
+    {
+        var blokeret = new Core.Models.Blokeret
+        {
+            BrugerId = adminId,
+            StartTid = dag.Date,
+            SlutTid = dag.Date.AddDays(1).AddSeconds(-1),
+            Type = "dag"
+        };
+        await Http.PostAsJsonAsync("api/blokeret", blokeret);
+        blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
+    }
+
+    // Fjerner blokeringen fra en dag
+    private async Task FjernBlokering(DateTime dag)
+    {
+        var blokeret = blokereteDatoer.FirstOrDefault(b => b.StartTid.Date == dag.Date);
+        if (blokeret != null)
+        {
+            await Http.DeleteAsync($"api/blokeret/{blokeret.Id}");
+            blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
+        }
+    }
+
+    // Returnerer alle aftaler for en given dato
+    private List<Aftale> KalenderAftalerForDag(DateTime dag) =>
+        aftaler.Where(a => a.StartTid.Date == dag.Date).ToList();
+
+    // Sætter den valgte dag og nulstiller opret-formularen
+    private void VælgDag(DateTime dag)
+    {
+        valgtDag = dag;
+        visOpretAftale = false;
+        nyAftale = new Aftale { BrugerId = adminId };
+        nyAftaleStartTid = new TimeOnly(9, 0);
+        nyAftaleSlutTid = new TimeOnly(10, 0);
+    }
+
+    // Åbner opret-formularen for den valgte dag
+    private void VisOpretAftaleForm()
+    {
+        visOpretAftale = true;
+        nyAftale = new Aftale { BrugerId = adminId };
+    }
+
+    // Gemmer en ny aftale og opdaterer listen
+    private async Task GemAftale()
+    {
+        // Kombinerer den valgte dato med de valgte tidspunkter
+        nyAftale.StartTid = valgtDag!.Value.Date + nyAftaleStartTid.ToTimeSpan();
+        nyAftale.SlutTid = valgtDag!.Value.Date + nyAftaleSlutTid.ToTimeSpan();
+        nyAftale.Oprettelse = DateTime.Now;
+
+        await Http.PostAsJsonAsync("api/aftale", nyAftale);
+
+        // Opdaterer listen så den nye aftale vises med det samme
+        aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
+        visOpretAftale = false;
+        nyAftale = new Aftale { BrugerId = adminId };
+    }
+
+    // Sletter en aftale og opdaterer listen
+    private async Task SletAftale(int id)
+    {
+        await Http.DeleteAsync($"api/aftale/{id}");
+        aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
     }
 }

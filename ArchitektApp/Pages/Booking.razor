@@ -1,6 +1,8 @@
 @page "/booking"
 @using Core.Models
+@using Blazored.LocalStorage
 @inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
 @inject HttpClient Http
 
 <nav class="home-nav">
@@ -100,28 +102,69 @@
                                        required />
                             </div>
 
-                            <!-- Dato og Tidspunkt (side om side) -->
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="date">DATO</label>
-                                        <input type="date"
-                                               class="form-control"
-                                               id="date"
-                                               @bind="valgDato"
-                                               required />
-                                    </div>
+                            <!-- DATO — custom kalender-picker med blokerede dage -->
+                            <div class="form-group">
+                                <label>DATO</label>
+
+                                <!-- Måneds-navigation -->
+                                <div class="booking-kalender-nav">
+                                    <button type="button" class="booking-kalender-nav-knap" @onclick="BookingForrigeMåned">←</button>
+                                    <span class="booking-kalender-nav-titel">
+                                        @(new DateTime(bookingKalenderÅr, bookingKalenderMåned, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))
+                                    </span>
+                                    <button type="button" class="booking-kalender-nav-knap" @onclick="BookingNæsteMåned">→</button>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="time">TIDSPUNKT</label>
-                                        <input type="time"
-                                               class="form-control"
-                                               id="time"
-                                               @bind="valgTid"
-                                               required />
-                                    </div>
+
+                                <!-- Kalender grid -->
+                                <div class="booking-kalender-grid">
+                                    <div class="booking-kalender-dag-header">Man</div>
+                                    <div class="booking-kalender-dag-header">Tir</div>
+                                    <div class="booking-kalender-dag-header">Ons</div>
+                                    <div class="booking-kalender-dag-header">Tor</div>
+                                    <div class="booking-kalender-dag-header">Fre</div>
+                                    <div class="booking-kalender-dag-header">Lør</div>
+                                    <div class="booking-kalender-dag-header">Søn</div>
+
+                                    @{
+                                        var bFørsteDag = new DateTime(bookingKalenderÅr, bookingKalenderMåned, 1);
+                                        var bOffset = ((int)bFørsteDag.DayOfWeek - 1 + 7) % 7;
+                                        var bDageIMåned = DateTime.DaysInMonth(bookingKalenderÅr, bookingKalenderMåned);
+                                    }
+
+                                    @for (int i = 0; i < bOffset; i++)
+                                    {
+                                        <div class="booking-kalender-celle tom"></div>
+                                    }
+
+                                    @for (int d = 1; d <= bDageIMåned; d++)
+                                    {
+                                        var dato = new DateTime(bookingKalenderÅr, bookingKalenderMåned, d);
+                                        var erBlokeret = blokereteDatoer.Any(b => b.StartTid.Date == dato.Date);
+                                        var erFortid = dato.Date < DateTime.Today;
+                                        var erValgt = valgDato.Date == dato.Date;
+                                        var utilgængelig = erBlokeret || erFortid;
+
+                                        <div class="booking-kalender-celle @(utilgængelig ? "utilgaengelig" : "") @(erValgt && !utilgængelig ? "valgt" : "")"
+                                             @onclick="() => { if (!utilgængelig) valgDato = dato; }">
+                                            @d
+                                        </div>
+                                    }
                                 </div>
+
+                                @if (valgDato != DateTime.MinValue)
+                                {
+                                    <p class="booking-valgt-dato">Valgt: @valgDato.ToString("d. MMMM yyyy", new System.Globalization.CultureInfo("da-DK"))</p>
+                                }
+                            </div>
+
+                            <!-- Tidspunkt -->
+                            <div class="form-group">
+                                <label for="time">TIDSPUNKT</label>
+                                <input type="time"
+                                       class="form-control"
+                                       id="time"
+                                       @bind="valgTid"
+                                       required />
                             </div>
 
                             <!-- Beskrivelse -->
@@ -152,12 +195,43 @@
     
     private bool erLoggetInd = false;
     private string brugerNavn = "";
-    
-     private void LogUd()
+
+    // Blokerede datoer hentet fra API
+    private List<Core.Models.Blokeret> blokereteDatoer = new();
+
+    // Kalender-navigation til dato-vælgeren
+    private int bookingKalenderMåned = DateTime.Now.Month;
+    private int bookingKalenderÅr = DateTime.Now.Year;
+
+    private void BookingForrigeMåned()
     {
+        if (bookingKalenderMåned == 1) { bookingKalenderMåned = 12; bookingKalenderÅr--; }
+        else bookingKalenderMåned--;
+    }
+
+    private void BookingNæsteMåned()
+    {
+        if (bookingKalenderMåned == 12) { bookingKalenderMåned = 1; bookingKalenderÅr++; }
+        else bookingKalenderMåned++;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userId = await LocalStorage.GetItemAsync<int?>("userId");
+        brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
+        erLoggetInd = userId != null && userId > 0;
+
+        // Henter blokerede datoer så de kan grå'es ud i kalender-vælgeren
+        blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
+    }
+
+    private async Task LogUd()
+    {
+        await LocalStorage.RemoveItemAsync("userId");
+        await LocalStorage.RemoveItemAsync("userName");
+        await LocalStorage.RemoveItemAsync("userRole");
         erLoggetInd = false;
         brugerNavn = "";
-        Navigation.NavigateTo("/");
     }
     
     // Opretter et tomt Booking objekt som formularen udfylder

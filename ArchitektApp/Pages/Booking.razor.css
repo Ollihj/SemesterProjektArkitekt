@@ -154,6 +154,92 @@ textarea.form-control {
     color: #1C1C1C;
 }
 
+/* =====================
+   DATO-KALENDER PICKER
+   ===================== */
+
+.booking-kalender-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+    margin-top: 8px;
+}
+
+.booking-kalender-nav-titel {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1C1C1C;
+    min-width: 140px;
+    text-align: center;
+    text-transform: capitalize;
+    letter-spacing: 0.05em;
+}
+
+.booking-kalender-nav-knap {
+    background: transparent;
+    border: 1px solid rgba(28,28,28,0.2);
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #1C1C1C;
+}
+
+.booking-kalender-nav-knap:hover {
+    border-color: #1C1C1C;
+}
+
+/* 7-kolonne grid */
+.booking-kalender-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 3px;
+    margin-bottom: 12px;
+}
+
+.booking-kalender-dag-header {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(28,28,28,0.4);
+    padding: 6px 0;
+}
+
+.booking-kalender-celle {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #1C1C1C;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.booking-kalender-celle:not(.tom):not(.utilgaengelig):hover {
+    background: rgba(28,28,28,0.06);
+}
+
+/* Valgt dag */
+.booking-kalender-celle.valgt {
+    background: #1C1C1C;
+    color: white;
+}
+
+/* Blokeret eller fortid — grå og ikke klikbar */
+.booking-kalender-celle.utilgaengelig {
+    color: rgba(28,28,28,0.25);
+    cursor: default;
+    text-decoration: line-through;
+}
+
+.booking-valgt-dato {
+    font-size: 13px;
+    color: rgba(28,28,28,0.6);
+    margin-top: 4px;
+    text-transform: capitalize;
+}
+
 /* Responsive Design */
 @media (max-width: 991px) {
     .page-title {

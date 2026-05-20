@@ -315,6 +315,197 @@
     margin-top: 8px;
 }
 
+/* =====================
+   KALENDER
+   ===================== */
+
+/* Måneds-navigation med frem/tilbage pile og titel i midten */
+.kalender-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.kalender-nav-titel {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a1a1a;
+    min-width: 160px;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+.kalender-nav-knap {
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.kalender-nav-knap:hover {
+    background: #f0f0f0;
+}
+
+/* 7-kolonne grid til ugedage og datoer */
+.kalender-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 32px;
+    max-width: 700px;
+}
+
+.kalender-dag-header {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #888;
+    padding: 8px 0;
+}
+
+/* En dag-celle i kalenderen */
+.kalender-celle {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    position: relative;
+    gap: 4px;
+}
+
+.kalender-celle:not(.tom):hover {
+    background: #f0f0f0;
+}
+
+/* Fremhæver den valgte dag */
+.kalender-celle.valgt {
+    background: #1a1a1a;
+    color: white;
+}
+
+/* Fremhæver dags dato med en ramme */
+.kalender-celle.idag {
+    border: 1px solid #1a1a1a;
+}
+
+.kalender-celle.idag.valgt {
+    border-color: transparent;
+}
+
+.kalender-dag-nr {
+    font-size: 13px;
+}
+
+/* Lille prik under datoen der indikerer at der er aftaler */
+.kalender-indikator {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4a90d9;
+}
+
+.kalender-celle.valgt .kalender-indikator {
+    background: white;
+}
+
+/* Blokeret dag — rød tint og gennemstregning */
+.kalender-celle.blokeret {
+    background: #fef2f2;
+    color: #e05555;
+    text-decoration: line-through;
+}
+
+.kalender-celle.blokeret:hover {
+    background: #fee2e2;
+}
+
+.kalender-celle.blokeret.valgt {
+    background: #e05555;
+    color: white;
+    text-decoration: line-through;
+}
+
+/* VALGT DAG PANEL */
+.kalender-dag-panel {
+    background: white;
+    border: 1px solid #eee;
+    padding: 24px;
+    max-width: 700px;
+    margin-bottom: 24px;
+}
+
+.kalender-dag-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.kalender-dag-panel-header h3 {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1a1a1a;
+    text-transform: capitalize;
+}
+
+/* En aftale i listen under den valgte dag */
+.kalender-aftale-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.kalender-aftale-tid {
+    font-size: 12px;
+    color: #888;
+    white-space: nowrap;
+    min-width: 110px;
+    padding-top: 2px;
+}
+
+.kalender-aftale-info {
+    flex: 1;
+}
+
+.kalender-aftale-titel {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+}
+
+.kalender-aftale-beskrivelse {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Opret-formularen vises inden i dag-panelet */
+.kalender-formular {
+    margin-top: 24px;
+    border-top: 1px solid #eee;
+    padding-top: 24px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Start og sluttid side om side */
+.kalender-tider {
+    display: flex;
+    gap: 16px;
+}
+
+.kalender-tider .admin-felt {
+    flex: 1;
+}
+
 /* HENVENDELSER TABEL */
 .admin-tabel {
     width: 100%;
