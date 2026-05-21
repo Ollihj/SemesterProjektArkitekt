@@ -12,7 +12,11 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("http://
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddScoped<LoginService>();
 
-// Registrerer FileService så den kan bruges i Blazor-komponenter via dependency injection
+// Registrerer services så de kan bruges i Blazor-komponenter via dependency injection
 builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<MedarbejderService>();
+builder.Services.AddScoped<KalenderService>();
+builder.Services.AddScoped<HenvendelseService>();
+builder.Services.AddScoped<ProjektService>();
 
 await builder.Build().RunAsync();

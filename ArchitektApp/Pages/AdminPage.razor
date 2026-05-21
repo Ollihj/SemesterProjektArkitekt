@@ -1,17 +1,12 @@
-@page "/admin"
+﻿@page "/admin"
 @using Core.Models
-@using Blazored.LocalStorage
-@using ArchitektApp.Service
-@inject NavigationManager Navigation
-@inject ILocalStorageService LocalStorage
-@inject HttpClient Http
-@inject FileService FileService
+@using Microsoft.AspNetCore.Components.Forms
 
 <PageTitle>Admin Dashboard</PageTitle>
 
 <!-- =====================
      DASHBOARD LAYOUT
-     Sidebar til venstre med sektionsknapper, hovedindhold til højre
+     Sidebar til venstre med sektionsknapper, hovedindhold til hÃ¸jre
      ===================== -->
 <div class="admin-layout">
 
@@ -20,7 +15,7 @@
         <div class="admin-logo">JOHAN BERTHELSEN, ARKITEKT MAA</div>
         <p class="admin-velkommen">Velkommen, @brugerNavn</p>
 
-        <!-- Sektionsknapper — klik skifter den aktive sektion uden at genindlæse siden -->
+        <!-- Sektionsknapper â€” klik skifter den aktive sektion uden at genindlÃ¦se siden -->
         <nav class="admin-nav">
             <button class="admin-nav-btn @(aktivSektion == "henvendelser" ? "aktiv" : "")"
                     @onclick='() => SkiftSektion("henvendelser")'>
@@ -42,7 +37,7 @@
 
         <!-- Log ud og tilbage til forside i bunden af sidebaren -->
         <div class="admin-sidebar-footer">
-            <button class="admin-nav-btn" @onclick='() => Navigation.NavigateTo("/")'>← Forside</button>
+            <button class="admin-nav-btn" @onclick='() => Navigation.NavigateTo("/")'>â† Forside</button>
             <button class="admin-nav-btn admin-log-ud" @onclick="LogUd">Log ud</button>
         </div>
     </aside>
@@ -75,7 +70,7 @@
                             <th>NAVN</th>
                             <th>EMAIL</th>
                             <th>TELEFON</th>
-                            <th>ØNSKET DATO</th>
+                            <th>Ã˜NSKET DATO</th>
                             <th>BESKRIVELSE</th>
                             <th></th>
                         </tr>
@@ -147,13 +142,8 @@
                         <p class="admin-fejl">@medarbejderFejl</p>
                     }
 
-                    @if (!string.IsNullOrEmpty(medarbejderStatus))
-                    {
-                        <p class="admin-status">@medarbejderStatus</p>
-                    }
-
                     <div class="admin-formular-knapper">
-                        <button class="admin-knap" @onclick="GemMedarbejder">@(erRedigeringMedarbejder ? "Gem ændringer" : "Opret medarbejder")</button>
+                        <button class="admin-knap" @onclick="GemMedarbejder">@(erRedigeringMedarbejder ? "Gem Ã¦ndringer" : "Opret medarbejder")</button>
                         <button class="admin-knap-sek" @onclick="LukMedarbejderFormular">Annuller</button>
                     </div>
                 </div>
@@ -181,7 +171,7 @@
                             <tr>
                                 <td>@m.Navn</td>
                                 <td>@m.Email</td>
-                                <td>@(m.Telefon ?? "—")</td>
+                                <td>@(m.Telefon ?? "â€”")</td>
                                 <td>
                                     <div class="admin-henvendelse-knapper">
                                         <button class="admin-knap-sek" @onclick="() => VisRedigerMedarbejderFormular(m)">Rediger</button>
@@ -206,7 +196,7 @@
 
                 @if (!visFormular)
                 {
-                    <!-- Knap til at åbne opret-formularen -->
+                    <!-- Knap til at Ã¥bne opret-formularen -->
                     <button class="admin-knap" @onclick="VisOpretFormular">+ Opret nyt projekt</button>
                 }
             </div>
@@ -228,7 +218,7 @@
                         @foreach (var p in projekter)
                         {
                             <div class="admin-projekt-kort">
-                                <!-- Viser det første billede som thumbnail, eller en grå flade hvis ingen billeder -->
+                                <!-- Viser det fÃ¸rste billede som thumbnail, eller en grÃ¥ flade hvis ingen billeder -->
                                 <div class="admin-projekt-billede">
                                     @if (p.Billeder.Any())
                                     {
@@ -241,7 +231,7 @@
                                 </div>
                                 <div class="admin-projekt-info">
                                     <p class="admin-projekt-navn">@p.Navn</p>
-                                    <p class="admin-projekt-aar">@p.År</p>
+                                    <p class="admin-projekt-aar">@p.Ã…r</p>
                                     <div class="admin-projekt-knapper">
                                         <!-- Rediger-knap udfylder formularen med projektets data -->
                                         <button class="admin-knap-sek" @onclick="() => VisRedigerFormular(p)">Rediger</button>
@@ -257,7 +247,7 @@
             {
                 <!-- =====================
                      OPRET / REDIGER FORMULAR
-                     Samme formular bruges til både opret og rediger
+                     Samme formular bruges til bÃ¥de opret og rediger
                      erRedigering styrer om der sendes POST eller PUT
                      ===================== -->
                 <div class="admin-formular">
@@ -275,13 +265,13 @@
                         <textarea @bind="aktivProjekt.Beskrivelse" rows="4" placeholder="Beskriv projektet..."></textarea>
                     </div>
 
-                    <!-- År -->
+                    <!-- Ã…r -->
                     <div class="admin-felt">
-                        <label>ÅR</label>
-                        <input type="number" @bind="aktivProjekt.År" placeholder="2024" />
+                        <label>Ã…R</label>
+                        <input type="number" @bind="aktivProjekt.Ã…r" placeholder="2024" />
                     </div>
 
-                    <!-- Billeder med beskrivelse — viser alle uploadede billeder med et beskrivelsesfelt under hvert -->
+                    <!-- Billeder med beskrivelse â€” viser alle uploadede billeder med et beskrivelsesfelt under hvert -->
                     @if (aktivProjekt.Billeder.Any())
                     {
                         <div class="admin-felt">
@@ -292,7 +282,7 @@
                                     <div class="admin-billede-thumb">
                                         <img src="@FileService.GetImageUrl(billede.FileName)" alt="billede" />
                                         <!-- Slet-knap fjerner billedet fra projektet og databasen -->
-                                        <button class="admin-billede-slet" @onclick="() => FjernBillede(billede)">×</button>
+                                        <button class="admin-billede-slet" @onclick="() => FjernBillede(billede)">Ã—</button>
                                     </div>
                                     <!-- Beskrivelsesfelt til hvert enkelt billede -->
                                     <input type="text"
@@ -304,9 +294,9 @@
                         </div>
                     }
 
-                    <!-- Upload nye billeder — hvert nyt billede tilføjes til listen ovenfor -->
+                    <!-- Upload nye billeder â€” hvert nyt billede tilfÃ¸jes til listen ovenfor -->
                     <div class="admin-felt">
-                        <label>TILFØJ BILLEDER</label>
+                        <label>TILFÃ˜J BILLEDER</label>
                         <InputFile OnChange="UploadBilleder" multiple accept="image/*" />
                         @if (uploaderBilleder)
                         {
@@ -335,8 +325,8 @@
 
         <!-- =====================
              KALENDER SEKTION
-             Månedsoverblik med indikator på dage der har aftaler
-             Klik på dag viser aftalerne for den dag og giver mulighed for at oprette ny
+             MÃ¥nedsoverblik med indikator pÃ¥ dage der har aftaler
+             Klik pÃ¥ dag viser aftalerne for den dag og giver mulighed for at oprette ny
              ===================== -->
         @if (aktivSektion == "kalender")
         {
@@ -344,18 +334,18 @@
                 <h2 class="admin-sektion-titel">Kalender</h2>
             </div>
 
-            <!-- MÅNEDS NAVIGATION -->
+            <!-- MÃ…NEDS NAVIGATION -->
             <div class="kalender-nav">
-                <button class="kalender-nav-knap" @onclick="ForrigeMåned">←</button>
+                <button class="kalender-nav-knap" @onclick="ForrigeMÃ¥ned">â†</button>
                 <span class="kalender-nav-titel">
-                    @(new DateTime(kalenderÅr, kalenderMåned, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))
+                    @(new DateTime(kalenderÃ…r, kalenderMÃ¥ned, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))
                 </span>
-                <button class="kalender-nav-knap" @onclick="NæsteMåned">→</button>
+                <button class="kalender-nav-knap" @onclick="NÃ¦steMÃ¥ned">â†’</button>
             </div>
 
             <!-- KALENDER GRID
-                 7 kolonner — man til søn
-                 Tomme celler tilføjes før den 1. dag i måneden -->
+                 7 kolonner â€” man til sÃ¸n
+                 Tomme celler tilfÃ¸jes fÃ¸r den 1. dag i mÃ¥neden -->
             <div class="kalender-grid">
 
                 <!-- Ugedags-headers -->
@@ -364,33 +354,33 @@
                 <div class="kalender-dag-header">Ons</div>
                 <div class="kalender-dag-header">Tor</div>
                 <div class="kalender-dag-header">Fre</div>
-                <div class="kalender-dag-header">Lør</div>
-                <div class="kalender-dag-header">Søn</div>
+                <div class="kalender-dag-header">LÃ¸r</div>
+                <div class="kalender-dag-header">SÃ¸n</div>
 
                 @{
-                    // Beregner hvilken ugedag den 1. i måneden falder på (mandag = 0)
-                    var førsteDag = new DateTime(kalenderÅr, kalenderMåned, 1);
-                    var offset = ((int)førsteDag.DayOfWeek - 1 + 7) % 7;
-                    var dageIMåned = DateTime.DaysInMonth(kalenderÅr, kalenderMåned);
+                    // Beregner hvilken ugedag den 1. i mÃ¥neden falder pÃ¥ (mandag = 0)
+                    var fÃ¸rsteDag = new DateTime(kalenderÃ…r, kalenderMÃ¥ned, 1);
+                    var offset = ((int)fÃ¸rsteDag.DayOfWeek - 1 + 7) % 7;
+                    var dageIMÃ¥ned = DateTime.DaysInMonth(kalenderÃ…r, kalenderMÃ¥ned);
                 }
 
-                <!-- Tomme celler inden månedens første dag -->
+                <!-- Tomme celler inden mÃ¥nedens fÃ¸rste dag -->
                 @for (int i = 0; i < offset; i++)
                 {
                     <div class="kalender-celle tom"></div>
                 }
 
-                <!-- En celle per dag i måneden -->
-                @for (int d = 1; d <= dageIMåned; d++)
+                <!-- En celle per dag i mÃ¥neden -->
+                @for (int d = 1; d <= dageIMÃ¥ned; d++)
                 {
-                    var dato = new DateTime(kalenderÅr, kalenderMåned, d);
+                    var dato = new DateTime(kalenderÃ…r, kalenderMÃ¥ned, d);
                     var harAftaler = KalenderHarAftaler(dato);
                     var erValgt = valgtDag?.Date == dato.Date;
                     var erIdag = dato.Date == DateTime.Today;
                     var erBlokeret = ErDagBlokeret(dato);
 
                     <div class="kalender-celle @(erValgt ? "valgt" : "") @(erIdag ? "idag" : "") @(erBlokeret ? "blokeret" : "")"
-                         @onclick="() => VælgDag(dato)">
+                         @onclick="() => VÃ¦lgDag(dato)">
                         <span class="kalender-dag-nr">@d</span>
                         @if (harAftaler)
                         {
@@ -402,7 +392,7 @@
             </div>
 
             <!-- VALGT DAG PANEL
-                 Vises når man klikker på en dag — lister aftalerne og giver mulighed for at oprette ny -->
+                 Vises nÃ¥r man klikker pÃ¥ en dag â€” lister aftalerne og giver mulighed for at oprette ny -->
             @if (valgtDag != null)
             {
                 var dagAftaler = KalenderAftalerForDag(valgtDag.Value);
@@ -434,7 +424,7 @@
                         {
                             <div class="kalender-aftale-item">
                                 <div class="kalender-aftale-tid">
-                                    @a.StartTid.ToString("HH:mm") — @a.SlutTid.ToString("HH:mm")
+                                    @a.StartTid.ToString("HH:mm") â€” @a.SlutTid.ToString("HH:mm")
                                 </div>
                                 <div class="kalender-aftale-info">
                                     <p class="kalender-aftale-titel">@a.Titel</p>
@@ -448,7 +438,7 @@
                         }
                     }
 
-                    <!-- OPRET AFTALE FORMULAR — vises når man trykker "+ Ny aftale" -->
+                    <!-- OPRET AFTALE FORMULAR â€” vises nÃ¥r man trykker "+ Ny aftale" -->
                     @if (visOpretAftale)
                     {
                         <div class="admin-formular kalender-formular">
@@ -490,474 +480,3 @@
     </main>
 </div>
 
-@code {
-    // Styrer hvilken sektion der vises — starter med henvendelser
-    private string aktivSektion = "henvendelser";
-
-    private string brugerNavn = "";
-    private int adminId = 0;
-
-    // Core.Models.Booking bruges eksplicit fordi Booking.razor-komponenten ellers skaber navnekollision
-    private List<Core.Models.Booking>? henvendelser;
-
-    // =====================
-    // MEDARBEJDERE STATE
-    // =====================
-
-    private List<Bruger> medarbejdere = new();
-    private bool visOpretMedarbejder = false;
-    private bool erRedigeringMedarbejder = false;
-    private Bruger nyMedarbejder = new();
-    private string medarbejderStatus = "";
-    private string medarbejderFejl = "";
-
-    // =====================
-    // PROJEKTER STATE
-    // =====================
-
-    private List<Projekt>? projekter;
-
-    // Styrer om listen eller formularen vises i projekter-sektionen
-    private bool visFormular = false;
-
-    // True når man redigerer et eksisterende projekt, false når man opretter nyt
-    private bool erRedigering = false;
-
-    // Det projekt der aktuelt oprettes eller redigeres
-    private Projekt aktivProjekt = new();
-
-    private bool uploaderBilleder = false;
-    private string projektStatus = "";
-    private string projektFejl = "";
-
-    // =====================
-    // KALENDER STATE
-    // =====================
-
-    // Den måned og det år der vises i kalenderen — starter på den aktuelle måned
-    private int kalenderMåned = DateTime.Now.Month;
-    private int kalenderÅr = DateTime.Now.Year;
-
-    // Liste over adminens egne aftaler
-    private List<Aftale> aftaler = new();
-
-    // Liste over blokerede datoer
-    private List<Core.Models.Blokeret> blokereteDatoer = new();
-
-    // Den dag der er klikket på — null hvis ingen dag er valgt
-    private DateTime? valgtDag = null;
-
-    // Styrer om opret-formularen vises under den valgte dag
-    private bool visOpretAftale = false;
-
-    // Den nye aftale der er ved at blive oprettet
-    private Aftale nyAftale = new();
-
-    // Separate tidsvariabler fordi Blazor binder type="time" til TimeOnly
-    private TimeOnly nyAftaleStartTid = new TimeOnly(9, 0);
-    private TimeOnly nyAftaleSlutTid = new TimeOnly(10, 0);
-
-    // Kører automatisk når siden indlæses
-    protected override async Task OnInitializedAsync()
-    {
-        // Henter brugeroplysninger fra LocalStorage
-        var userRole = await LocalStorage.GetItemAsync<string>("userRole");
-        brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
-        adminId = await LocalStorage.GetItemAsync<int>("userId");
-
-        // Hvis brugeren ikke er admin sendes de tilbage til forsiden
-        if (userRole != "admin")
-        {
-            Navigation.NavigateTo("/");
-            return;
-        }
-
-        // Henter alle henvendelser fra API'et
-        henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
-
-        // Henter medarbejdere (brugere med rollen "medarbejder")
-        var alleBrugere = await Http.GetFromJsonAsync<List<Bruger>>("api/bruger") ?? new();
-        medarbejdere = alleBrugere.Where(b => b.Rolle == "medarbejder").ToList();
-
-        // Henter alle projekter fra API'et
-        projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
-
-        // Henter adminens egne aftaler baseret på adminId
-        aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
-
-        // Henter alle blokerede datoer
-        blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
-    }
-
-    // Skifter aktiv sektion og nulstiller formular-state
-    private void SkiftSektion(string sektion)
-    {
-        aktivSektion = sektion;
-        LukFormular();
-    }
-
-    // =====================
-    // HENVENDELSER METODER
-    // =====================
-
-    // Accepterer en henvendelse: opretter en aftale i kalenderen, sletter bookingen og skifter til kalender-sektionen
-    private async Task AccepterHenvendelse(Core.Models.Booking h)
-    {
-        var aftale = new Aftale
-        {
-            BrugerId = adminId,
-            Titel = $"Møde med {h.Kundenavn}",
-            StartTid = DateTime.SpecifyKind(h.OensketDato, DateTimeKind.Utc),
-            SlutTid = DateTime.SpecifyKind(h.OensketDato.AddHours(1), DateTimeKind.Utc),
-            Beskrivelse = h.Beskrivelse,
-            Type = "booking",
-            Oprettelse = DateTime.UtcNow
-        };
-
-        await Http.PostAsJsonAsync("api/aftale", aftale);
-        await Http.DeleteAsync($"api/booking/{h.Id}");
-
-        henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
-        aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
-
-        // Naviger til kalender-sektionen og vis måneden for den accepterede aftale
-        kalenderMåned = h.OensketDato.Month;
-        kalenderÅr = h.OensketDato.Year;
-        valgtDag = h.OensketDato;
-        visOpretAftale = false;
-        aktivSektion = "kalender";
-    }
-
-    // Afviser en henvendelse: sletter bookingen uden at oprette en aftale
-    private async Task AfvisHenvendelse(int id)
-    {
-        henvendelser?.RemoveAll(h => h.Id == id);
-        await Http.DeleteAsync($"api/booking/{id}");
-        henvendelser = await Http.GetFromJsonAsync<List<Core.Models.Booking>>("api/booking") ?? new();
-    }
-
-    // =====================
-    // MEDARBEJDERE METODER
-    // =====================
-
-    private void VisOpretMedarbejderFormular()
-    {
-        nyMedarbejder = new Bruger { Rolle = "medarbejder" };
-        erRedigeringMedarbejder = false;
-        medarbejderFejl = "";
-        medarbejderStatus = "";
-        visOpretMedarbejder = true;
-    }
-
-    private void VisRedigerMedarbejderFormular(Bruger m)
-    {
-        nyMedarbejder = new Bruger
-        {
-            Id = m.Id,
-            Navn = m.Navn,
-            Email = m.Email,
-            Password = m.Password,
-            Telefon = m.Telefon,
-            Rolle = "medarbejder"
-        };
-        erRedigeringMedarbejder = true;
-        medarbejderFejl = "";
-        medarbejderStatus = "";
-        visOpretMedarbejder = true;
-    }
-
-    private void LukMedarbejderFormular()
-    {
-        visOpretMedarbejder = false;
-        erRedigeringMedarbejder = false;
-        medarbejderFejl = "";
-        medarbejderStatus = "";
-    }
-
-    private async Task GemMedarbejder()
-    {
-        medarbejderFejl = "";
-
-        if (string.IsNullOrWhiteSpace(nyMedarbejder.Navn))
-        {
-            medarbejderFejl = "Navn er påkrævet.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(nyMedarbejder.Email))
-        {
-            medarbejderFejl = "Email er påkrævet.";
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(nyMedarbejder.Password))
-        {
-            medarbejderFejl = "Kodeord er påkrævet.";
-            return;
-        }
-
-        nyMedarbejder.Rolle = "medarbejder";
-
-        if (erRedigeringMedarbejder)
-            await Http.PutAsJsonAsync($"api/bruger/{nyMedarbejder.Id}", nyMedarbejder);
-        else
-            await Http.PostAsJsonAsync("api/bruger", nyMedarbejder);
-
-        var alleBrugere = await Http.GetFromJsonAsync<List<Bruger>>("api/bruger") ?? new();
-        medarbejdere = alleBrugere.Where(b => b.Rolle == "medarbejder").ToList();
-
-        LukMedarbejderFormular();
-    }
-
-    private async Task SletMedarbejder(int id)
-    {
-        medarbejdere.RemoveAll(m => m.Id == id);
-        await Http.DeleteAsync($"api/bruger/{id}");
-
-        var alleBrugere = await Http.GetFromJsonAsync<List<Bruger>>("api/bruger") ?? new();
-        medarbejdere = alleBrugere.Where(b => b.Rolle == "medarbejder").ToList();
-    }
-
-    // =====================
-    // PROJEKTER METODER
-    // =====================
-
-    // Åbner formularen til at oprette et nyt tomt projekt
-    private void VisOpretFormular()
-    {
-        aktivProjekt = new Projekt { BrugerId = adminId };
-        erRedigering = false;
-        projektStatus = "";
-        projektFejl = "";
-        visFormular = true;
-    }
-
-    // Åbner formularen udfyldt med det valgte projekts data
-    private void VisRedigerFormular(Projekt p)
-    {
-        // Kopierer projektet så ændringer ikke vises i listen før man gemmer
-        aktivProjekt = new Projekt
-        {
-            Id = p.Id,
-            BrugerId = p.BrugerId,
-            Navn = p.Navn,
-            Beskrivelse = p.Beskrivelse,
-            År = p.År,
-            Billeder = p.Billeder.Select(b => new BilledeItem { FileName = b.FileName, Beskrivelse = b.Beskrivelse }).ToList(),
-            Oprettelse = p.Oprettelse
-        };
-        erRedigering = true;
-        projektStatus = "";
-        visFormular = true;
-    }
-
-    // Lukker formularen og vender tilbage til listen
-    private void LukFormular()
-    {
-        visFormular = false;
-        projektStatus = "";
-        projektFejl = "";
-    }
-
-    // Uploader valgte billedfiler til serveren og gemmer filnavnene på projektet
-    private async Task UploadBilleder(InputFileChangeEventArgs e)
-    {
-        uploaderBilleder = true;
-
-        foreach (var file in e.GetMultipleFiles())
-        {
-            var stream = file.OpenReadStream(maxAllowedSize: 10_000_000);
-            var (success, fileName) = await FileService.SendFile(file.Name, stream);
-
-            // Opretter et BilledeItem med filnavnet — beskrivelsen kan udfyldes i formularen
-            if (success)
-                aktivProjekt.Billeder.Add(new BilledeItem { FileName = fileName });
-        }
-
-        uploaderBilleder = false;
-    }
-
-    // Fjerner et billede fra projektet og sletter det fra databasen
-    private async Task FjernBillede(BilledeItem billede)
-    {
-        aktivProjekt.Billeder.Remove(billede);
-        await FileService.DeleteFile(billede.FileName);
-    }
-
-    // Gemmer projektet — POST ved opret, PUT ved rediger
-    private async Task GemProjekt()
-    {
-        projektFejl = "";
-
-        if (string.IsNullOrWhiteSpace(aktivProjekt.Navn))
-        {
-            projektFejl = "Projektet skal have et navn.";
-            return;
-        }
-
-        if (aktivProjekt.År <= 0)
-        {
-            projektFejl = "Projektet skal have et årstal.";
-            return;
-        }
-
-        if (!aktivProjekt.Billeder.Any())
-        {
-            projektFejl = "Projektet skal have mindst ét billede.";
-            return;
-        }
-
-        if (erRedigering)
-        {
-            // Opdaterer det eksisterende projekt i databasen
-            await Http.PutAsJsonAsync($"api/projekt/{aktivProjekt.Id}", aktivProjekt);
-            projektStatus = "Projektet er opdateret.";
-        }
-        else
-        {
-            // Opretter et nyt projekt i databasen
-            await Http.PostAsJsonAsync("api/projekt", aktivProjekt);
-            projektStatus = "Projektet er oprettet.";
-        }
-
-        // Opdaterer listen så det nye/ændrede projekt vises med det samme
-        projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
-        LukFormular();
-    }
-
-    // Sletter et projekt og dets tilhørende billeder fra databasen
-    private async Task SletProjekt(int id)
-    {
-        var projekt = projekter?.FirstOrDefault(p => p.Id == id);
-
-        if (projekt != null)
-        {
-            // Sletter hvert billede fra MongoDB inden projektet slettes
-            foreach (var billede in projekt.Billeder)
-            {
-                await FileService.DeleteFile(billede.FileName);
-            }
-        }
-
-        await Http.DeleteAsync($"api/projekt/{id}");
-
-        // Opdaterer listen efter sletning
-        projekter = await Http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
-    }
-
-    // Logger brugeren ud og sender dem til forsiden
-    private async Task LogUd()
-    {
-        await LocalStorage.RemoveItemAsync("userId");
-        await LocalStorage.RemoveItemAsync("userName");
-        await LocalStorage.RemoveItemAsync("userRole");
-        Navigation.NavigateTo("/");
-    }
-
-    // =====================
-    // KALENDER METODER
-    // =====================
-
-    // Går en måned tilbage — håndterer årsskifte
-    private void ForrigeMåned()
-    {
-        if (kalenderMåned == 1) { kalenderMåned = 12; kalenderÅr--; }
-        else kalenderMåned--;
-        valgtDag = null;
-    }
-
-    // Går en måned frem — håndterer årsskifte
-    private void NæsteMåned()
-    {
-        if (kalenderMåned == 12) { kalenderMåned = 1; kalenderÅr++; }
-        else kalenderMåned++;
-        valgtDag = null;
-    }
-
-    // Sammenligner kun år/måned/dag for at undgå fejl når DateTimeKind er forskellig (Utc vs Unspecified)
-    private static bool SammeDag(DateTime a, DateTime b) =>
-        a.Year == b.Year && a.Month == b.Month && a.Day == b.Day;
-
-    private bool KalenderHarAftaler(DateTime dag) =>
-        aftaler.Any(a => SammeDag(a.StartTid, dag));
-
-    private bool ErDagBlokeret(DateTime dag) =>
-        blokereteDatoer.Any(b => SammeDag(b.StartTid, dag));
-
-    // Blokerer en dag ved at oprette en Blokeret-post der dækker hele dagen.
-    // DateTimeKind.Utc forhindrer MongoDB i at fortolke datoen som lokal tid og gemme den forkert.
-    private async Task BlokerDag(DateTime dag)
-    {
-        var utcDato = DateTime.SpecifyKind(dag.Date, DateTimeKind.Utc);
-        var blokeret = new Core.Models.Blokeret
-        {
-            BrugerId = adminId,
-            StartTid = utcDato,
-            SlutTid = utcDato.AddDays(1).AddSeconds(-1),
-            Type = "dag"
-        };
-
-        // Tilføj til listen med det samme så UI opdateres øjeblikkeligt
-        blokereteDatoer.Add(blokeret);
-
-        await Http.PostAsJsonAsync("api/blokeret", blokeret);
-        blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
-    }
-
-    // Fjerner blokeringen fra en dag
-    private async Task FjernBlokering(DateTime dag)
-    {
-        var blokeret = blokereteDatoer.FirstOrDefault(b => b.StartTid.Date == dag.Date);
-        if (blokeret != null)
-        {
-            // Fjern fra listen med det samme så UI opdateres øjeblikkeligt
-            blokereteDatoer.Remove(blokeret);
-
-            await Http.DeleteAsync($"api/blokeret/{blokeret.Id}");
-            blokereteDatoer = await Http.GetFromJsonAsync<List<Core.Models.Blokeret>>("api/blokeret") ?? new();
-        }
-    }
-
-    private List<Aftale> KalenderAftalerForDag(DateTime dag) =>
-        aftaler.Where(a => SammeDag(a.StartTid, dag)).ToList();
-
-    // Sætter den valgte dag og nulstiller opret-formularen
-    private void VælgDag(DateTime dag)
-    {
-        valgtDag = dag;
-        visOpretAftale = false;
-        nyAftale = new Aftale { BrugerId = adminId };
-        nyAftaleStartTid = new TimeOnly(9, 0);
-        nyAftaleSlutTid = new TimeOnly(10, 0);
-    }
-
-    // Åbner opret-formularen for den valgte dag
-    private void VisOpretAftaleForm()
-    {
-        visOpretAftale = true;
-        nyAftale = new Aftale { BrugerId = adminId };
-    }
-
-    // Gemmer en ny aftale og opdaterer listen
-    private async Task GemAftale()
-    {
-        // Kombinerer den valgte dato med de valgte tidspunkter
-        nyAftale.StartTid = valgtDag!.Value.Date + nyAftaleStartTid.ToTimeSpan();
-        nyAftale.SlutTid = valgtDag!.Value.Date + nyAftaleSlutTid.ToTimeSpan();
-        nyAftale.Oprettelse = DateTime.Now;
-
-        await Http.PostAsJsonAsync("api/aftale", nyAftale);
-
-        // Opdaterer listen så den nye aftale vises med det samme
-        aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
-        visOpretAftale = false;
-        nyAftale = new Aftale { BrugerId = adminId };
-    }
-
-    // Sletter en aftale og opdaterer listen
-    private async Task SletAftale(int id)
-    {
-        await Http.DeleteAsync($"api/aftale/{id}");
-        aftaler = await Http.GetFromJsonAsync<List<Aftale>>($"api/aftale/bruger/{adminId}") ?? new();
-    }
-}
