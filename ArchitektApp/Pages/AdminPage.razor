@@ -6,7 +6,7 @@
 
 <!-- =====================
      DASHBOARD LAYOUT
-     Sidebar til venstre med sektionsknapper, hovedindhold til hÃ¸jre
+     Sidebar til venstre med sektionsknapper, hovedindhold til højre
      ===================== -->
 <div class="admin-layout">
 
@@ -15,7 +15,7 @@
         <div class="admin-logo">JOHAN BERTHELSEN, ARKITEKT MAA</div>
         <p class="admin-velkommen">Velkommen, @brugerNavn</p>
 
-        <!-- Sektionsknapper â€” klik skifter den aktive sektion uden at genindlÃ¦se siden -->
+        <!-- Sektionsknapper — klik skifter den aktive sektion uden at genindlæse siden -->
         <nav class="admin-nav">
             <button class="admin-nav-btn @(aktivSektion == "henvendelser" ? "aktiv" : "")"
                     @onclick='() => SkiftSektion("henvendelser")'>
@@ -37,7 +37,7 @@
 
         <!-- Log ud og tilbage til forside i bunden af sidebaren -->
         <div class="admin-sidebar-footer">
-            <button class="admin-nav-btn" @onclick='() => Navigation.NavigateTo("/")'>â† Forside</button>
+            <button class="admin-nav-btn" @onclick='() => Navigation.NavigateTo("/")'>← Forside</button>
             <button class="admin-nav-btn admin-log-ud" @onclick="LogUd">Log ud</button>
         </div>
     </aside>
@@ -70,7 +70,7 @@
                             <th>NAVN</th>
                             <th>EMAIL</th>
                             <th>TELEFON</th>
-                            <th>Ã˜NSKET DATO</th>
+                            <th>ØNSKET DATO</th>
                             <th>BESKRIVELSE</th>
                             <th></th>
                         </tr>
@@ -142,8 +142,10 @@
                         <p class="admin-fejl">@medarbejderFejl</p>
                     }
 
+
+
                     <div class="admin-formular-knapper">
-                        <button class="admin-knap" @onclick="GemMedarbejder">@(erRedigeringMedarbejder ? "Gem Ã¦ndringer" : "Opret medarbejder")</button>
+                        <button class="admin-knap" @onclick="GemMedarbejder">@(erRedigeringMedarbejder ? "Gem ændringer" : "Opret medarbejder")</button>
                         <button class="admin-knap-sek" @onclick="LukMedarbejderFormular">Annuller</button>
                     </div>
                 </div>
@@ -171,7 +173,7 @@
                             <tr>
                                 <td>@m.Navn</td>
                                 <td>@m.Email</td>
-                                <td>@(m.Telefon ?? "â€”")</td>
+                                <td>@(m.Telefon ?? "—")</td>
                                 <td>
                                     <div class="admin-henvendelse-knapper">
                                         <button class="admin-knap-sek" @onclick="() => VisRedigerMedarbejderFormular(m)">Rediger</button>
@@ -196,7 +198,7 @@
 
                 @if (!visFormular)
                 {
-                    <!-- Knap til at Ã¥bne opret-formularen -->
+                    <!-- Knap til at åbne opret-formularen -->
                     <button class="admin-knap" @onclick="VisOpretFormular">+ Opret nyt projekt</button>
                 }
             </div>
@@ -218,7 +220,7 @@
                         @foreach (var p in projekter)
                         {
                             <div class="admin-projekt-kort">
-                                <!-- Viser det fÃ¸rste billede som thumbnail, eller en grÃ¥ flade hvis ingen billeder -->
+                                <!-- Viser det første billede som thumbnail, eller en grå flade hvis ingen billeder -->
                                 <div class="admin-projekt-billede">
                                     @if (p.Billeder.Any())
                                     {
@@ -231,7 +233,7 @@
                                 </div>
                                 <div class="admin-projekt-info">
                                     <p class="admin-projekt-navn">@p.Navn</p>
-                                    <p class="admin-projekt-aar">@p.Ã…r</p>
+                                    <p class="admin-projekt-aar">@p.År</p>
                                     <div class="admin-projekt-knapper">
                                         <!-- Rediger-knap udfylder formularen med projektets data -->
                                         <button class="admin-knap-sek" @onclick="() => VisRedigerFormular(p)">Rediger</button>
@@ -247,7 +249,7 @@
             {
                 <!-- =====================
                      OPRET / REDIGER FORMULAR
-                     Samme formular bruges til bÃ¥de opret og rediger
+                     Samme formular bruges til både opret og rediger
                      erRedigering styrer om der sendes POST eller PUT
                      ===================== -->
                 <div class="admin-formular">
@@ -265,13 +267,13 @@
                         <textarea @bind="aktivProjekt.Beskrivelse" rows="4" placeholder="Beskriv projektet..."></textarea>
                     </div>
 
-                    <!-- Ã…r -->
+                    <!-- År -->
                     <div class="admin-felt">
-                        <label>Ã…R</label>
-                        <input type="number" @bind="aktivProjekt.Ã…r" placeholder="2024" />
+                        <label>ÅR</label>
+                        <input type="number" @bind="aktivProjekt.År" placeholder="2024" />
                     </div>
 
-                    <!-- Billeder med beskrivelse â€” viser alle uploadede billeder med et beskrivelsesfelt under hvert -->
+                    <!-- Billeder med beskrivelse — viser alle uploadede billeder med et beskrivelsesfelt under hvert -->
                     @if (aktivProjekt.Billeder.Any())
                     {
                         <div class="admin-felt">
@@ -282,7 +284,7 @@
                                     <div class="admin-billede-thumb">
                                         <img src="@FileService.GetImageUrl(billede.FileName)" alt="billede" />
                                         <!-- Slet-knap fjerner billedet fra projektet og databasen -->
-                                        <button class="admin-billede-slet" @onclick="() => FjernBillede(billede)">Ã—</button>
+                                        <button class="admin-billede-slet" @onclick="() => FjernBillede(billede)">×</button>
                                     </div>
                                     <!-- Beskrivelsesfelt til hvert enkelt billede -->
                                     <input type="text"
@@ -294,9 +296,9 @@
                         </div>
                     }
 
-                    <!-- Upload nye billeder â€” hvert nyt billede tilfÃ¸jes til listen ovenfor -->
+                    <!-- Upload nye billeder — hvert nyt billede tilføjes til listen ovenfor -->
                     <div class="admin-felt">
-                        <label>TILFÃ˜J BILLEDER</label>
+                        <label>TILFØJ BILLEDER</label>
                         <InputFile OnChange="UploadBilleder" multiple accept="image/*" />
                         @if (uploaderBilleder)
                         {
@@ -325,8 +327,8 @@
 
         <!-- =====================
              KALENDER SEKTION
-             MÃ¥nedsoverblik med indikator pÃ¥ dage der har aftaler
-             Klik pÃ¥ dag viser aftalerne for den dag og giver mulighed for at oprette ny
+             Månedsoverblik med indikator på dage der har aftaler
+             Klik på dag viser aftalerne for den dag og giver mulighed for at oprette ny
              ===================== -->
         @if (aktivSektion == "kalender")
         {
@@ -334,18 +336,18 @@
                 <h2 class="admin-sektion-titel">Kalender</h2>
             </div>
 
-            <!-- MÃ…NEDS NAVIGATION -->
+            <!-- MÅNEDS NAVIGATION -->
             <div class="kalender-nav">
-                <button class="kalender-nav-knap" @onclick="ForrigeMÃ¥ned">â†</button>
+                <button class="kalender-nav-knap" @onclick="ForrigeMåned">←</button>
                 <span class="kalender-nav-titel">
-                    @(new DateTime(kalenderÃ…r, kalenderMÃ¥ned, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))
+                    @(new DateTime(kalenderÅr, kalenderMåned, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))
                 </span>
-                <button class="kalender-nav-knap" @onclick="NÃ¦steMÃ¥ned">â†’</button>
+                <button class="kalender-nav-knap" @onclick="NæsteMåned">→</button>
             </div>
 
             <!-- KALENDER GRID
-                 7 kolonner â€” man til sÃ¸n
-                 Tomme celler tilfÃ¸jes fÃ¸r den 1. dag i mÃ¥neden -->
+                 7 kolonner — man til søn
+                 Tomme celler tilføjes før den 1. dag i måneden -->
             <div class="kalender-grid">
 
                 <!-- Ugedags-headers -->
@@ -354,33 +356,33 @@
                 <div class="kalender-dag-header">Ons</div>
                 <div class="kalender-dag-header">Tor</div>
                 <div class="kalender-dag-header">Fre</div>
-                <div class="kalender-dag-header">LÃ¸r</div>
-                <div class="kalender-dag-header">SÃ¸n</div>
+                <div class="kalender-dag-header">Lør</div>
+                <div class="kalender-dag-header">Søn</div>
 
                 @{
-                    // Beregner hvilken ugedag den 1. i mÃ¥neden falder pÃ¥ (mandag = 0)
-                    var fÃ¸rsteDag = new DateTime(kalenderÃ…r, kalenderMÃ¥ned, 1);
-                    var offset = ((int)fÃ¸rsteDag.DayOfWeek - 1 + 7) % 7;
-                    var dageIMÃ¥ned = DateTime.DaysInMonth(kalenderÃ…r, kalenderMÃ¥ned);
+                    // Beregner hvilken ugedag den 1. i måneden falder på (mandag = 0)
+                    var førsteDag = new DateTime(kalenderÅr, kalenderMåned, 1);
+                    var offset = ((int)førsteDag.DayOfWeek - 1 + 7) % 7;
+                    var dageIMåned = DateTime.DaysInMonth(kalenderÅr, kalenderMåned);
                 }
 
-                <!-- Tomme celler inden mÃ¥nedens fÃ¸rste dag -->
+                <!-- Tomme celler inden månedens første dag -->
                 @for (int i = 0; i < offset; i++)
                 {
                     <div class="kalender-celle tom"></div>
                 }
 
-                <!-- En celle per dag i mÃ¥neden -->
-                @for (int d = 1; d <= dageIMÃ¥ned; d++)
+                <!-- En celle per dag i måneden -->
+                @for (int d = 1; d <= dageIMåned; d++)
                 {
-                    var dato = new DateTime(kalenderÃ…r, kalenderMÃ¥ned, d);
+                    var dato = new DateTime(kalenderÅr, kalenderMåned, d);
                     var harAftaler = KalenderHarAftaler(dato);
                     var erValgt = valgtDag?.Date == dato.Date;
                     var erIdag = dato.Date == DateTime.Today;
                     var erBlokeret = ErDagBlokeret(dato);
 
                     <div class="kalender-celle @(erValgt ? "valgt" : "") @(erIdag ? "idag" : "") @(erBlokeret ? "blokeret" : "")"
-                         @onclick="() => VÃ¦lgDag(dato)">
+                         @onclick="() => VælgDag(dato)">
                         <span class="kalender-dag-nr">@d</span>
                         @if (harAftaler)
                         {
@@ -392,7 +394,7 @@
             </div>
 
             <!-- VALGT DAG PANEL
-                 Vises nÃ¥r man klikker pÃ¥ en dag â€” lister aftalerne og giver mulighed for at oprette ny -->
+                 Vises når man klikker på en dag — lister aftalerne og giver mulighed for at oprette ny -->
             @if (valgtDag != null)
             {
                 var dagAftaler = KalenderAftalerForDag(valgtDag.Value);
@@ -424,7 +426,7 @@
                         {
                             <div class="kalender-aftale-item">
                                 <div class="kalender-aftale-tid">
-                                    @a.StartTid.ToString("HH:mm") â€” @a.SlutTid.ToString("HH:mm")
+                                    @a.StartTid.ToString("HH:mm") — @a.SlutTid.ToString("HH:mm")
                                 </div>
                                 <div class="kalender-aftale-info">
                                     <p class="kalender-aftale-titel">@a.Titel</p>
@@ -438,7 +440,7 @@
                         }
                     }
 
-                    <!-- OPRET AFTALE FORMULAR â€” vises nÃ¥r man trykker "+ Ny aftale" -->
+                    <!-- OPRET AFTALE FORMULAR — vises når man trykker "+ Ny aftale" -->
                     @if (visOpretAftale)
                     {
                         <div class="admin-formular kalender-formular">
@@ -479,4 +481,4 @@
 
     </main>
 </div>
-
+
