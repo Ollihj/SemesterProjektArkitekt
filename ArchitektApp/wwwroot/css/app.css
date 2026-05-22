@@ -148,7 +148,8 @@ a, .btn-link {
 /* Hero */
 .home-hero {
     height: 90vh;
-    background: linear-gradient(135deg, #b0a898, #8a7e72);
+    background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+                url('/Images/baggrundsbillede.jpeg') center/cover no-repeat;
     display: flex;
     align-items: flex-end;
     padding: 60px 48px;
