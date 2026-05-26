@@ -30,23 +30,4 @@ public class LoginService
             return null;
         }
     }
-
-    public async Task<Bruger?> Register(string navn, string email, string password)
-    {
-        try
-        {
-            // Opretter en ny bruger og sender den til API'et
-            var newUser = new Bruger { Navn = navn, Email = email, Password = password };
-            var response = await _client.PostAsJsonAsync($"{Config.ServerUrl}/api/bruger", newUser);
-            if (response.IsSuccessStatusCode)
-            {
-                return await response.Content.ReadFromJsonAsync<Bruger>();
-            }
-            return null;
-        }
-        catch
-        {
-            return null;
-        }
-    }
 }
