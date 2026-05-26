@@ -58,7 +58,7 @@ else
                 <div class="projekt-billede-wrapper">
                     @if (projekt.Billeder.Any())
                     {
-                        <img src="@($"http://localhost:5000/api/file/download/{projekt.Billeder.First().FileName}")"
+                        <img src="@($"https://arkitekt-api-2026-btffb6bpd5efdqb2.germanywestcentral-01.azurewebsites.net/api/file/download/{projekt.Billeder.First().FileName}")"
                              alt="@projekt.Navn" />
                     }
                     else
