@@ -4,6 +4,7 @@ using ArchitektApp.Pages;
 
 namespace ArchitektApp.Service;
 
+// Håndterer login-kommunikation med API'et
 public class LoginService
 {
     private readonly HttpClient _client;
@@ -13,6 +14,8 @@ public class LoginService
         _client = client;
     }
 
+    // Forsøger at logge brugeren ind med email og password
+    // Returnerer Bruger-objektet hvis login lykkedes, ellers null
     public async Task<Bruger?> ValidLogin(string email, string password)
     {
         try
@@ -27,6 +30,7 @@ public class LoginService
         }
         catch
         {
+            // Returnerer null hvis serveren ikke kan nås eller svarer med fejl
             return null;
         }
     }
