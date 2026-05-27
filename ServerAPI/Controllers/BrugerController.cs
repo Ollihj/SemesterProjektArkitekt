@@ -34,7 +34,7 @@ public class BrugerController : ControllerBase
     [HttpPost]
     public async Task<Bruger> Create(Bruger bruger)
     {
-        return await _repository.Create(bruger);
+        return await _repository.Save(bruger);
     }
 
     // Opdaterer en eksisterende bruger

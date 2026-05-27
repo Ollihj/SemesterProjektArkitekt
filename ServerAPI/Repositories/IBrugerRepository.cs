@@ -11,7 +11,7 @@ public interface IBrugerRepository
     Task<Bruger?> GetById(int id);
 
     // Opretter en ny bruger
-    Task<Bruger> Create(Bruger bruger);
+    Task<Bruger> Save(Bruger bruger);
 
     // Opdaterer en eksisterende bruger
     Task Update(int id, Bruger bruger);

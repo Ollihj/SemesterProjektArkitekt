@@ -43,7 +43,7 @@ public class BrugerRepository : IBrugerRepository
     }
 
     // Opretter en ny bruger og giver den næste ledige id
-    public async Task<Bruger> Create(Bruger bruger)
+    public async Task<Bruger> Save(Bruger bruger)
     {
         // Henter alle eksisterende brugere for at finde det højeste id
         List<Bruger> alleBrugere = await _brugere.Find(FilterDefinition<Bruger>.Empty).ToListAsync();
