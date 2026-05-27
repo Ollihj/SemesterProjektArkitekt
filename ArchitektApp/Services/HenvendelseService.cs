@@ -3,6 +3,7 @@ using System.Net.Http.Json;
 
 namespace ArchitektApp.Service;
 
+// Håndterer kommunikation med API'et for booking-henvendelser fra kunder
 public class HenvendelseService
 {
     private readonly HttpClient _http;
@@ -12,11 +13,13 @@ public class HenvendelseService
         _http = http;
     }
 
+    // Henter alle ubehandlede booking-henvendelser fra API'et
     public async Task<List<Booking>> GetHenvendelser()
     {
         return await _http.GetFromJsonAsync<List<Booking>>("api/booking") ?? new();
     }
 
+    // Sletter en henvendelse uden at oprette en aftale
     public async Task Afvis(int id)
     {
         await _http.DeleteAsync($"api/booking/{id}");

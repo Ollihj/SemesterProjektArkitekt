@@ -50,6 +50,7 @@ public partial class AdminPage
     private TimeOnly nyAftaleStartTid = new TimeOnly(9, 0);
     private TimeOnly nyAftaleSlutTid = new TimeOnly(10, 0);
 
+    // Tjekker om brugeren er admin og henter al nødvendig data ved sideindlæsning
     protected override async Task OnInitializedAsync()
     {
         var userRole = await LocalStorage.GetItemAsync<string>("userRole");
@@ -69,6 +70,7 @@ public partial class AdminPage
         blokereteDatoer = await KalenderService.GetBlokereteDatoer();
     }
 
+    // Skifter aktiv sektion i dashboardet og lukker eventuelle åbne formularer
     private void SkiftSektion(string sektion)
     {
         aktivSektion = sektion;
@@ -79,6 +81,7 @@ public partial class AdminPage
     // HENVENDELSER
     // =====================
 
+    // Accepterer en henvendelse, opretter en aftale og skifter til kalender-sektionen
     private async Task AccepterHenvendelse(Core.Models.Booking h)
     {
         await HenvendelseService.Accepter(h, adminId);
@@ -93,6 +96,7 @@ public partial class AdminPage
         aktivSektion = "kalender";
     }
 
+    // Afviser en henvendelse og sletter den fra databasen
     private async Task AfvisHenvendelse(int id)
     {
         henvendelser?.RemoveAll(h => h.Id == id);
@@ -104,6 +108,7 @@ public partial class AdminPage
     // MEDARBEJDERE
     // =====================
 
+    // Åbner formularen til at oprette en ny medarbejder
     private void VisOpretMedarbejderFormular()
     {
         nyMedarbejder = new Bruger { Rolle = "medarbejder" };
@@ -112,6 +117,7 @@ public partial class AdminPage
         visOpretMedarbejder = true;
     }
 
+    // Åbner formularen til at redigere en eksisterende medarbejder med eksisterende data udfyldt
     private void VisRedigerMedarbejderFormular(Bruger m)
     {
         nyMedarbejder = new Bruger { Id = m.Id, Navn = m.Navn, Email = m.Email, Password = m.Password, Telefon = m.Telefon, Rolle = "medarbejder" };
@@ -120,6 +126,7 @@ public partial class AdminPage
         visOpretMedarbejder = true;
     }
 
+    // Lukker medarbejder-formularen og nulstiller tilstand
     private void LukMedarbejderFormular()
     {
         visOpretMedarbejder = false;
@@ -127,6 +134,7 @@ public partial class AdminPage
         medarbejderFejl = "";
     }
 
+    // Validerer og gemmer medarbejderen — opretter ny eller opdaterer eksisterende
     private async Task GemMedarbejder()
     {
         medarbejderFejl = "";
@@ -146,6 +154,7 @@ public partial class AdminPage
         LukMedarbejderFormular();
     }
 
+    // Sletter en medarbejder fra databasen baseret på id
     private async Task SletMedarbejder(int id)
     {
         medarbejdere.RemoveAll(m => m.Id == id);
@@ -157,6 +166,7 @@ public partial class AdminPage
     // PROJEKTER
     // =====================
 
+    // Åbner formularen til at oprette et nyt tomt projekt
     private void VisOpretFormular()
     {
         aktivProjekt = new Projekt { BrugerId = adminId };
@@ -166,6 +176,7 @@ public partial class AdminPage
         visFormular = true;
     }
 
+    // Åbner formularen til at redigere et eksisterende projekt med eksisterende data udfyldt
     private void VisRedigerFormular(Projekt p)
     {
         aktivProjekt = new Projekt
@@ -180,6 +191,7 @@ public partial class AdminPage
         visFormular = true;
     }
 
+    // Lukker projekt-formularen og nulstiller status
     private void LukFormular()
     {
         visFormular = false;
@@ -187,6 +199,7 @@ public partial class AdminPage
         projektFejl = "";
     }
 
+    // Uploader valgte billeder til serveren og tilføjer dem til projektet
     private async Task UploadBilleder(InputFileChangeEventArgs e)
     {
         uploaderBilleder = true;
@@ -200,12 +213,14 @@ public partial class AdminPage
         uploaderBilleder = false;
     }
 
+    // Fjerner et billede fra projektet og sletter det fra serveren
     private async Task FjernBillede(BilledeItem billede)
     {
         aktivProjekt.Billeder.Remove(billede);
         await FileService.DeleteFile(billede.FileName);
     }
 
+    // Validerer og gemmer projektet — opretter nyt eller opdaterer eksisterende
     private async Task GemProjekt()
     {
         projektFejl = "";
@@ -229,6 +244,7 @@ public partial class AdminPage
         LukFormular();
     }
 
+    // Sletter alle projektets billeder fra serveren og derefter selve projektet
     private async Task SletProjekt(int id)
     {
         var projekt = projekter?.FirstOrDefault(p => p.Id == id);
@@ -240,6 +256,7 @@ public partial class AdminPage
         projekter = await ProjektService.GetProjekter();
     }
 
+    // Logger brugeren ud ved at fjerne alle session-data fra LocalStorage
     private async Task LogUd()
     {
         await LocalStorage.RemoveItemAsync("userId");
@@ -252,6 +269,7 @@ public partial class AdminPage
     // KALENDER
     // =====================
 
+    // Navigerer kalendervisningen én måned tilbage
     private void ForrigeMåned()
     {
         if (kalenderMåned == 1) { kalenderMåned = 12; kalenderÅr--; }
@@ -259,6 +277,7 @@ public partial class AdminPage
         valgtDag = null;
     }
 
+    // Navigerer kalendervisningen én måned frem
     private void NæsteMåned()
     {
         if (kalenderMåned == 12) { kalenderMåned = 1; kalenderÅr++; }
@@ -266,13 +285,20 @@ public partial class AdminPage
         valgtDag = null;
     }
 
+    // Hjælpemetode der sammenligner to datoer uden at tage tidspunktet i betragtning
     private static bool SammeDag(DateTime a, DateTime b) =>
         a.Year == b.Year && a.Month == b.Month && a.Day == b.Day;
 
+    // Returnerer true hvis der er mindst én aftale på den givne dag
     private bool KalenderHarAftaler(DateTime dag) => aftaler.Any(a => SammeDag(a.StartTid, dag));
+
+    // Returnerer true hvis den givne dag er blokeret
     private bool ErDagBlokeret(DateTime dag) => blokereteDatoer.Any(b => SammeDag(b.StartTid, dag));
+
+    // Returnerer alle aftaler der falder på den givne dag
     private List<Aftale> KalenderAftalerForDag(DateTime dag) => aftaler.Where(a => SammeDag(a.StartTid, dag)).ToList();
 
+    // Sætter den valgte dag og nulstiller opret-aftale formularen
     private void VælgDag(DateTime dag)
     {
         valgtDag = dag;
@@ -282,12 +308,14 @@ public partial class AdminPage
         nyAftaleSlutTid = new TimeOnly(10, 0);
     }
 
+    // Viser formularen til at oprette en ny aftale på den valgte dag
     private void VisOpretAftaleForm()
     {
         visOpretAftale = true;
         nyAftale = new Aftale { BrugerId = adminId };
     }
 
+    // Kombinerer den valgte dag med tidspunkterne og gemmer aftalen
     private async Task GemAftale()
     {
         nyAftale.StartTid = valgtDag!.Value.Date + nyAftaleStartTid.ToTimeSpan();
@@ -300,12 +328,14 @@ public partial class AdminPage
         nyAftale = new Aftale { BrugerId = adminId };
     }
 
+    // Sletter en aftale fra kalenderen baseret på id
     private async Task SletAftale(int id)
     {
         await KalenderService.SletAftale(id);
         aftaler = await KalenderService.GetAftaler(adminId);
     }
 
+    // Blokerer en hel dag så kunder ikke kan booke den
     private async Task BlokerDag(DateTime dag)
     {
         var temp = await KalenderService.BlokerDag(adminId, dag);
@@ -313,6 +343,7 @@ public partial class AdminPage
         blokereteDatoer = await KalenderService.GetBlokereteDatoer();
     }
 
+    // Fjerner blokeringen på en dag så den igen er tilgængelig for booking
     private async Task FjernBlokering(DateTime dag)
     {
         var blokeret = blokereteDatoer.FirstOrDefault(b => SammeDag(b.StartTid, dag));
