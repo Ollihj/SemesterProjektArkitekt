@@ -1,0 +1,147 @@
+@page "/medarbejder"
+@using Core.Models
+
+<PageTitle>Medarbejder Dashboard</PageTitle>
+
+<div class="admin-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+        <div class="admin-logo">JOHAN BERTHELSEN, ARKITEKT MAA</div>
+        <p class="admin-velkommen">Velkommen, @brugerNavn</p>
+
+        <div class="admin-sidebar-footer">
+            <button class="admin-nav-btn" @onclick='() => Navigation.NavigateTo("/")'>← Forside</button>
+            <button class="admin-nav-btn admin-log-ud" @onclick="LogUd">Log ud</button>
+        </div>
+    </aside>
+
+    <!-- HOVEDINDHOLD -->
+    <main class="admin-main">
+
+        <div class="admin-sektion-header">
+            <h2 class="admin-sektion-titel">Kalender</h2>
+        </div>
+
+        <!-- MÅNEDS NAVIGATION -->
+        <div class="kalender-nav">
+            <button class="kalender-nav-knap" @onclick="ForrigeMåned">←</button>
+            <span class="kalender-nav-titel">
+                @(new DateTime(kalenderÅr, kalenderMåned, 1).ToString("MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))
+            </span>
+            <button class="kalender-nav-knap" @onclick="NæsteMåned">→</button>
+        </div>
+
+        <!-- KALENDER GRID -->
+        <div class="kalender-grid">
+            <div class="kalender-dag-header">Man</div>
+            <div class="kalender-dag-header">Tir</div>
+            <div class="kalender-dag-header">Ons</div>
+            <div class="kalender-dag-header">Tor</div>
+            <div class="kalender-dag-header">Fre</div>
+            <div class="kalender-dag-header">Lør</div>
+            <div class="kalender-dag-header">Søn</div>
+
+            @{
+                var førsteDag = new DateTime(kalenderÅr, kalenderMåned, 1);
+                var offset = ((int)førsteDag.DayOfWeek - 1 + 7) % 7;
+                var dageIMåned = DateTime.DaysInMonth(kalenderÅr, kalenderMåned);
+            }
+
+            @for (int i = 0; i < offset; i++)
+            {
+                <div class="kalender-celle tom"></div>
+            }
+
+            @for (int d = 1; d <= dageIMåned; d++)
+            {
+                var dato = new DateTime(kalenderÅr, kalenderMåned, d);
+                var harAftaler = KalenderHarAftaler(dato);
+                var erValgt = valgtDag?.Date == dato.Date;
+                var erIdag = dato.Date == DateTime.Today;
+
+                <div class="kalender-celle @(erValgt ? "valgt" : "") @(erIdag ? "idag" : "")"
+                     @onclick="() => VælgDag(dato)">
+                    <span class="kalender-dag-nr">@d</span>
+                    @if (harAftaler)
+                    {
+                        <div class="kalender-indikator"></div>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- VALGT DAG PANEL -->
+        @if (valgtDag != null)
+        {
+            var dagAftaler = KalenderAftalerForDag(valgtDag.Value);
+
+            <div class="kalender-dag-panel">
+                <div class="kalender-dag-panel-header">
+                    <h3>@(valgtDag.Value.ToString("dddd d. MMMM yyyy", new System.Globalization.CultureInfo("da-DK")))</h3>
+                    <button class="admin-knap" @onclick="VisOpretAftaleForm">+ Ny aftale</button>
+                </div>
+
+                @if (dagAftaler.Count == 0)
+                {
+                    <p class="admin-tom">Ingen aftaler denne dag.</p>
+                }
+                else
+                {
+                    @foreach (var a in dagAftaler.OrderBy(a => a.StartTid))
+                    {
+                        <div class="kalender-aftale-item">
+                            <div class="kalender-aftale-tid">
+                                @a.StartTid.ToString("HH:mm") — @a.SlutTid.ToString("HH:mm")
+                            </div>
+                            <div class="kalender-aftale-info">
+                                <p class="kalender-aftale-titel">@a.Titel</p>
+                                @if (!string.IsNullOrEmpty(a.Beskrivelse))
+                                {
+                                    <p class="kalender-aftale-beskrivelse">@a.Beskrivelse</p>
+                                }
+                            </div>
+                            <button class="admin-knap-fare" @onclick="() => SletAftale(a.Id)">Slet</button>
+                        </div>
+                    }
+                }
+
+                <!-- OPRET AFTALE FORMULAR -->
+                @if (visOpretAftale)
+                {
+                    <div class="admin-formular kalender-formular">
+                        <h3 class="admin-formular-titel">Ny aftale</h3>
+
+                        <div class="admin-felt">
+                            <label>TITEL</label>
+                            <input type="text" @bind="nyAftale.Titel" placeholder="Aftaletitel" />
+                        </div>
+
+                        <div class="kalender-tider">
+                            <div class="admin-felt">
+                                <label>START</label>
+                                <input type="time" @bind="nyAftaleStartTid" />
+                            </div>
+                            <div class="admin-felt">
+                                <label>SLUT</label>
+                                <input type="time" @bind="nyAftaleSlutTid" />
+                            </div>
+                        </div>
+
+                        <div class="admin-felt">
+                            <label>BESKRIVELSE</label>
+                            <textarea @bind="nyAftale.Beskrivelse" rows="3"
+                                      placeholder="Beskriv aftalen..."></textarea>
+                        </div>
+
+                        <div class="admin-formular-knapper">
+                            <button class="admin-knap" @onclick="GemAftale">Gem aftale</button>
+                            <button class="admin-knap-sek" @onclick='() => visOpretAftale = false'>Annuller</button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+    </main>
+</div>

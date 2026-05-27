@@ -66,7 +66,12 @@ if (user != null)
 await LocalStorage.SetItemAsync("userId", user.Id);
 await LocalStorage.SetItemAsync("userName", user.Navn);
 await LocalStorage.SetItemAsync("userRole", user.Rolle);
-Navigation.NavigateTo("/", true);
+
+// Send admin til dashboard, medarbejder til eget dashboard
+if (user.Rolle == "admin")
+    Navigation.NavigateTo("/admin", true);
+else
+    Navigation.NavigateTo("/medarbejder", true);
 return;
 }
 
