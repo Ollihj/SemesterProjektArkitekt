@@ -20,7 +20,7 @@ public class ProjektService
     }
 
     // Opretter et nyt projekt
-    public async Task Opret(Projekt projekt)
+    public async Task PostProjekt(Projekt projekt)
     {
         await _http.PostAsJsonAsync("api/projekt", projekt);
     }

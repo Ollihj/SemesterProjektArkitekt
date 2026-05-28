@@ -240,7 +240,7 @@ public partial class AdminPage
         }
         else
         {
-            await ProjektService.Opret(aktivProjekt);
+            await ProjektService.PostProjekt(aktivProjekt);
             projektStatus = "Projektet er oprettet.";
         }
 
