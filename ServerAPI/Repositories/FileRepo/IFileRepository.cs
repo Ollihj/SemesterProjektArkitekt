@@ -4,7 +4,7 @@ namespace ServerAPI.Repositories.FileRepo;
 public interface IFileRepository
 {
     // Gemmer en fil og returnerer det unikke filnavn der bruges til at hente den igen
-    string Add(IFormFile file);
+    string Save(IFormFile file);
 
     // Henter en fils binære indhold baseret på filnavn
     byte[]? Get(string fileName);

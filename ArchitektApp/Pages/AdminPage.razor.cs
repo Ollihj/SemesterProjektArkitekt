@@ -210,7 +210,7 @@ public partial class AdminPage
         foreach (var file in e.GetMultipleFiles())
         {
             var stream = file.OpenReadStream(maxAllowedSize: 10_000_000);
-            var (success, fileName) = await FileService.SendFile(file.Name, stream);
+            var (success, fileName) = await FileService.PostFile(file.Name, stream);
             if (success)
                 aktivProjekt.Billeder.Add(new BilledeItem { FileName = fileName });
         }

@@ -17,7 +17,7 @@ public class MongoFileRepository : IFileRepository
     }
 
     // Gemmer en fil i MongoDB og returnerer det unikke filnavn
-    public string Add(IFormFile file)
+    public string Save(IFormFile file)
     {
         // Laver et unikt filnavn ved at kombinere tidsstempel og originalt filnavn
         var uniqueName = $"{DateTime.Now.Ticks}_{file.FileName}";

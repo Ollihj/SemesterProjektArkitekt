@@ -24,7 +24,7 @@ public class FileController : ControllerBase
             return BadRequest("Ingen fil modtaget.");
 
         // Gemmer filen og får det unikke filnavn tilbage
-        var fileName = _fileRepo.Add(file);
+        var fileName = _fileRepo.Save(file);
 
         // Returnerer filnavnet så klienten kan gemme det på projektet
         return Ok(fileName);

@@ -14,7 +14,7 @@ public class FileService
     }
 
     // Sender en fil til serveren og returnerer det unikke filnavn hvis det lykkedes
-    public async Task<(bool success, string info)> SendFile(string filename, Stream stream)
+    public async Task<(bool success, string info)> PostFile(string filename, Stream stream)
     {
         // Pakker filen ind i en multipart form request som serveren kan modtage
         using var content = new MultipartFormDataContent();
