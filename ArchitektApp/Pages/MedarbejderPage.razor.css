@@ -1,0 +1,358 @@
+/* Layout: sidebar til venstre, hovedindhold til højre, fylder hele skærmen */
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* SIDEBAR */
+.admin-sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: #1a1a1a;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 32px 0;
+}
+
+.admin-logo {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    padding: 0 24px 24px;
+    border-bottom: 1px solid #333;
+}
+
+.admin-velkommen {
+    font-size: 12px;
+    color: #888;
+    padding: 16px 24px;
+    margin: 0;
+}
+
+.admin-nav-btn {
+    background: transparent;
+    border: none;
+    color: #aaa;
+    text-align: left;
+    padding: 14px 24px;
+    font-size: 13px;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: background 0.15s, color 0.15s;
+}
+
+.admin-nav-btn:hover {
+    background: #2a2a2a;
+    color: white;
+}
+
+/* Log ud og forside-knapper i bunden */
+.admin-sidebar-footer {
+    display: flex;
+    flex-direction: column;
+    border-top: 1px solid #333;
+    padding-top: 8px;
+    margin-top: auto;
+}
+
+.admin-log-ud {
+    color: #e05555;
+}
+
+.admin-log-ud:hover {
+    color: #ff6666;
+}
+
+/* HOVEDINDHOLD */
+.admin-main {
+    flex: 1;
+    padding: 48px;
+    background: #f9f8f5;
+    overflow-y: auto;
+}
+
+.admin-sektion-titel {
+    font-size: 24px;
+    font-weight: 300;
+    color: #1a1a1a;
+    margin-bottom: 32px;
+    letter-spacing: 0.05em;
+}
+
+.admin-tom {
+    color: #888;
+    font-size: 14px;
+}
+
+.admin-sektion-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.admin-sektion-header .admin-sektion-titel {
+    margin-bottom: 0;
+}
+
+/* KNAPPER */
+.admin-knap {
+    background: #1a1a1a;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+}
+
+.admin-knap:hover {
+    background: #333;
+}
+
+.admin-knap-sek {
+    background: transparent;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 10px 20px;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+}
+
+.admin-knap-sek:hover {
+    border-color: #333;
+}
+
+.admin-knap-fare {
+    background: transparent;
+    color: #e05555;
+    border: 1px solid #e05555;
+    padding: 10px 20px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.admin-knap-fare:hover {
+    background: #fef2f2;
+}
+
+/* FORMULAR */
+.admin-formular {
+    background: white;
+    padding: 32px;
+    max-width: 640px;
+}
+
+.admin-formular-titel {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 24px;
+    color: #1a1a1a;
+}
+
+.admin-felt {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.admin-felt label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: #888;
+}
+
+.admin-felt input,
+.admin-felt textarea {
+    border: 1px solid #ddd;
+    padding: 10px 12px;
+    font-size: 14px;
+    width: 100%;
+    font-family: inherit;
+}
+
+.admin-felt textarea {
+    resize: vertical;
+}
+
+.admin-formular-knapper {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+/* =====================
+   KALENDER
+   ===================== */
+
+/* Måneds-navigation med frem/tilbage pile og titel i midten */
+.kalender-nav {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.kalender-nav-titel {
+    font-size: 16px;
+    font-weight: 500;
+    color: #1a1a1a;
+    min-width: 160px;
+    text-align: center;
+    text-transform: capitalize;
+}
+
+.kalender-nav-knap {
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+}
+
+.kalender-nav-knap:hover {
+    background: #f0f0f0;
+}
+
+/* 7-kolonne grid til ugedage og datoer */
+.kalender-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 32px;
+    max-width: 700px;
+}
+
+.kalender-dag-header {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: #888;
+    padding: 8px 0;
+}
+
+/* En dag-celle i kalenderen */
+.kalender-celle {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    position: relative;
+    gap: 4px;
+}
+
+.kalender-celle:not(.tom):hover {
+    background: #f0f0f0;
+}
+
+/* Fremhæver den valgte dag */
+.kalender-celle.valgt {
+    background: #1a1a1a;
+    color: white;
+}
+
+/* Fremhæver dags dato med en ramme */
+.kalender-celle.idag {
+    border: 1px solid #1a1a1a;
+}
+
+.kalender-celle.idag.valgt {
+    border-color: transparent;
+}
+
+.kalender-dag-nr {
+    font-size: 13px;
+}
+
+/* Lille prik under datoen der indikerer at der er aftaler */
+.kalender-indikator {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #4a90d9;
+}
+
+.kalender-celle.valgt .kalender-indikator {
+    background: white;
+}
+
+/* VALGT DAG PANEL */
+.kalender-dag-panel {
+    background: white;
+    border: 1px solid #eee;
+    padding: 24px;
+    max-width: 700px;
+    margin-bottom: 24px;
+}
+
+.kalender-dag-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.kalender-dag-panel-header h3 {
+    font-size: 15px;
+    font-weight: 500;
+    color: #1a1a1a;
+    text-transform: capitalize;
+}
+
+/* En aftale i listen under den valgte dag */
+.kalender-aftale-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.kalender-aftale-tid {
+    font-size: 12px;
+    color: #888;
+    white-space: nowrap;
+    min-width: 110px;
+    padding-top: 2px;
+}
+
+.kalender-aftale-info {
+    flex: 1;
+}
+
+.kalender-aftale-titel {
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a1a1a;
+    margin-bottom: 2px;
+}
+
+.kalender-aftale-beskrivelse {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Opret-formularen vises inden i dag-panelet */
+.kalender-formular {
+    margin-top: 24px;
+    border-top: 1px solid #eee;
+    padding-top: 24px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Start og sluttid side om side */
+.kalender-tider {
+    display: flex;
+    gap: 16px;
+}
+
+.kalender-tider .admin-felt {
+    flex: 1;
+}
