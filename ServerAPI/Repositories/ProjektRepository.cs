@@ -63,8 +63,8 @@ public class ProjektRepository : IProjektRepository
         return brugerProjekter;
     }
 
-    // Opretter et nyt projekt og giver det næste ledige id
-    public async Task<Projekt> Save(Projekt projekt)
+    // Opretter et nyt projekt, giver det næste ledige id og returnerer den opdaterede liste
+    public async Task<List<Projekt>> Save(Projekt projekt)
     {
         // Henter alle eksisterende projekter for at finde det højeste id
         List<Projekt> alleProjekter = await _projekter.Find(FilterDefinition<Projekt>.Empty).ToListAsync();
@@ -93,8 +93,8 @@ public class ProjektRepository : IProjektRepository
         projekt.Oprettelse = DateTime.Now;
         // Gemmer det nye projekt i MongoDB
         await _projekter.InsertOneAsync(projekt);
-        // Returnerer det oprettede projekt med det nye id
-        return projekt;
+        // Returnerer den fulde opdaterede liste
+        return await GetAll();
     }
 
     // Opdaterer et eksisterende projekt med nye data

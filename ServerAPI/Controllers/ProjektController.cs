@@ -37,9 +37,9 @@ public class ProjektController : ControllerBase
         return await _repository.GetByBrugerId(brugerId);
     }
 
-    // Opretter et nyt projekt
+    // Opretter et nyt projekt og returnerer den opdaterede liste
     [HttpPost]
-    public async Task<Projekt> Create(Projekt projekt)
+    public async Task<List<Projekt>> Create(Projekt projekt)
     {
         return await _repository.Save(projekt);
     }

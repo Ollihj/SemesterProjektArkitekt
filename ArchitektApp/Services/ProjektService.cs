@@ -19,10 +19,11 @@ public class ProjektService
         return await _http.GetFromJsonAsync<List<Projekt>>("api/projekt") ?? new();
     }
 
-    // Opretter et nyt projekt
-    public async Task PostProjekt(Projekt projekt)
+    // Opretter et nyt projekt — API returnerer den fulde liste direkte
+    public async Task<List<Projekt>> PostProjekt(Projekt projekt)
     {
-        await _http.PostAsJsonAsync("api/projekt", projekt);
+        var response = await _http.PostAsJsonAsync("api/projekt", projekt);
+        return await response.Content.ReadFromJsonAsync<List<Projekt>>() ?? new();
     }
 
     // Opdaterer et eksisterende projekt

@@ -13,8 +13,8 @@ public interface IProjektRepository
     // Henter alle projekter der tilhører en bestemt bruger
     Task<List<Projekt>> GetByBrugerId(int brugerId);
 
-    // Opretter et nyt projekt
-    Task<Projekt> Save(Projekt projekt);
+    // Opretter et nyt projekt og returnerer den opdaterede liste
+    Task<List<Projekt>> Save(Projekt projekt);
 
     // Opdaterer et eksisterende projekt
     Task Update(int id, Projekt projekt);

@@ -236,15 +236,15 @@ public partial class AdminPage
         if (erRedigering)
         {
             await ProjektService.Opdater(aktivProjekt);
+            projekter = await ProjektService.GetProjekter();
             projektStatus = "Projektet er opdateret.";
         }
         else
         {
-            await ProjektService.PostProjekt(aktivProjekt);
+            projekter = await ProjektService.PostProjekt(aktivProjekt);
             projektStatus = "Projektet er oprettet.";
         }
 
-        projekter = await ProjektService.GetProjekter();
         LukFormular();
     }
 
