@@ -26,7 +26,7 @@
     {
         <div class="home-nav-right">
             <!-- Dashboard-knappen er kun synlig når man er logget ind -->
-            <button @onclick='() => Navigation.NavigateTo("/admin")'>DASHBOARD</button>
+            <button @onclick='() => Navigation.NavigateTo(userRolle == "admin" ? "/admin" : "/medarbejder")'>DASHBOARD</button>
             <span>@brugerNavn</span>
             <button @onclick="LogUd">LOG UD</button>
         </div>
@@ -145,6 +145,7 @@
     // Styrer om login-knap eller brugernavn/log ud vises i navigationen
     private bool erLoggetInd = false;
     private string brugerNavn = "";
+    private string userRolle = "";
 
     // Listen af projekter hentet fra API'et — null mens de hentes, tom liste hvis ingen findes
     private List<Projekt>? projekter;
@@ -155,6 +156,7 @@
         // Henter brugeroplysninger fra LocalStorage for at tjekke om man er logget ind
         var userId = await LocalStorage.GetItemAsync<int?>("userId");
         brugerNavn = await LocalStorage.GetItemAsync<string>("userName") ?? "";
+        userRolle = await LocalStorage.GetItemAsync<string>("userRole") ?? "";
 
         // Brugeren anses som logget ind hvis der findes et gyldigt userId i LocalStorage
         erLoggetInd = userId != null && userId > 0;

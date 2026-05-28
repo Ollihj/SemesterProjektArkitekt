@@ -146,20 +146,17 @@ public partial class AdminPage
         nyMedarbejder.Rolle = "medarbejder";
 
         if (erRedigeringMedarbejder)
-            await MedarbejderService.Opdater(nyMedarbejder);
+            medarbejdere = await MedarbejderService.Opdater(nyMedarbejder);
         else
-            await MedarbejderService.Opret(nyMedarbejder);
+            medarbejdere = await MedarbejderService.Opret(nyMedarbejder);
 
-        medarbejdere = await MedarbejderService.GetMedarbejdere();
         LukMedarbejderFormular();
     }
 
     // Sletter en medarbejder fra databasen baseret på id
     private async Task SletMedarbejder(int id)
     {
-        medarbejdere.RemoveAll(m => m.Id == id);
-        await MedarbejderService.Slet(id);
-        medarbejdere = await MedarbejderService.GetMedarbejdere();
+        medarbejdere = await MedarbejderService.Slet(id);
     }
 
     // =====================

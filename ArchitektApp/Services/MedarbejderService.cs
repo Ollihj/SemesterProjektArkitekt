@@ -21,21 +21,24 @@ public class MedarbejderService
         return alle.Where(b => b.Rolle == "medarbejder").ToList();
     }
 
-    // Opretter en ny medarbejder i databasen via API'et
-    public async Task Opret(Bruger bruger)
+    // Opretter en ny medarbejder og returnerer den opdaterede liste
+    public async Task<List<Bruger>> Opret(Bruger bruger)
     {
         await _http.PostAsJsonAsync("api/bruger", bruger);
+        return await GetMedarbejdere();
     }
 
-    // Opdaterer en eksisterende medarbejders oplysninger
-    public async Task Opdater(Bruger bruger)
+    // Opdaterer en eksisterende medarbejder og returnerer den opdaterede liste
+    public async Task<List<Bruger>> Opdater(Bruger bruger)
     {
         await _http.PutAsJsonAsync($"api/bruger/{bruger.Id}", bruger);
+        return await GetMedarbejdere();
     }
 
-    // Sletter en medarbejder fra databasen baseret på id
-    public async Task Slet(int id)
+    // Sletter en medarbejder og returnerer den opdaterede liste
+    public async Task<List<Bruger>> Slet(int id)
     {
         await _http.DeleteAsync($"api/bruger/{id}");
+        return await GetMedarbejdere();
     }
 }
