@@ -233,19 +233,26 @@ public partial class AdminPage
         if (aktivProjekt.År <= 0) { projektFejl = "Projektet skal have et årstal."; return; }
         if (!aktivProjekt.Billeder.Any()) { projektFejl = "Projektet skal have mindst ét billede."; return; }
 
-        if (erRedigering)
+        try
         {
-            await ProjektService.Opdater(aktivProjekt);
-            projekter = await ProjektService.GetProjekter();
-            projektStatus = "Projektet er opdateret.";
-        }
-        else
-        {
-            projekter = await ProjektService.PostProjekt(aktivProjekt);
-            projektStatus = "Projektet er oprettet.";
-        }
+            if (erRedigering)
+            {
+                await ProjektService.Opdater(aktivProjekt);
+                projekter = await ProjektService.GetProjekter();
+                projektStatus = "Projektet er opdateret.";
+            }
+            else
+            {
+                projekter = await ProjektService.PostProjekt(aktivProjekt);
+                projektStatus = "Projektet er oprettet.";
+            }
 
-        LukFormular();
+            LukFormular();
+        }
+        catch
+        {
+            projektFejl = "Noget gik galt. Prøv igen.";
+        }
     }
 
     // Sletter alle projektets billeder fra serveren og derefter selve projektet
