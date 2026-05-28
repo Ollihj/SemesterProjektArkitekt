@@ -41,7 +41,7 @@ public class AftaleController : ControllerBase
     [HttpPost]
     public async Task<Aftale> Create(Aftale aftale)
     {
-        return await _repository.Create(aftale);
+        return await _repository.Save(aftale);
     }
 
     // Opdaterer en eksisterende aftale

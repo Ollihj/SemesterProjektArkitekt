@@ -64,7 +64,7 @@ public class BlokeretRepository : IBlokeretRepository
     }
 
     // Opretter en ny blokeret tid og giver den næste ledige id
-    public async Task<Blokeret> Create(Blokeret blokeret)
+    public async Task<Blokeret> Save(Blokeret blokeret)
     {
         // Henter alle eksisterende blokerede tider for at finde det højeste id
         List<Blokeret> alleBlokerede = await _blokerede.Find(FilterDefinition<Blokeret>.Empty).ToListAsync();

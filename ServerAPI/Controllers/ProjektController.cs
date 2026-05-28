@@ -41,7 +41,7 @@ public class ProjektController : ControllerBase
     [HttpPost]
     public async Task<Projekt> Create(Projekt projekt)
     {
-        return await _repository.Create(projekt);
+        return await _repository.Save(projekt);
     }
 
     // Opdaterer et eksisterende projekt

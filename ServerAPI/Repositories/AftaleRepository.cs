@@ -64,7 +64,7 @@ public class AftaleRepository : IAftaleRepository
     }
 
     // Opretter en ny aftale og giver den næste ledige id
-    public async Task<Aftale> Create(Aftale aftale)
+    public async Task<Aftale> Save(Aftale aftale)
     {
         // Henter alle eksisterende aftaler for at finde det højeste id
         List<Aftale> alleAftaler = await _aftaler.Find(FilterDefinition<Aftale>.Empty).ToListAsync();

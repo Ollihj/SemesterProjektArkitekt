@@ -64,7 +64,7 @@ public class ProjektRepository : IProjektRepository
     }
 
     // Opretter et nyt projekt og giver det næste ledige id
-    public async Task<Projekt> Create(Projekt projekt)
+    public async Task<Projekt> Save(Projekt projekt)
     {
         // Henter alle eksisterende projekter for at finde det højeste id
         List<Projekt> alleProjekter = await _projekter.Find(FilterDefinition<Projekt>.Empty).ToListAsync();

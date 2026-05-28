@@ -14,7 +14,7 @@ public interface IProjektRepository
     Task<List<Projekt>> GetByBrugerId(int brugerId);
 
     // Opretter et nyt projekt
-    Task<Projekt> Create(Projekt projekt);
+    Task<Projekt> Save(Projekt projekt);
 
     // Opdaterer et eksisterende projekt
     Task Update(int id, Projekt projekt);

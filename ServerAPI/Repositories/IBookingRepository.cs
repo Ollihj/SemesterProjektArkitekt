@@ -14,7 +14,7 @@ public interface IBookingRepository
     Task<List<Booking>> GetByBrugerId(int brugerId);
 
     // Opretter en ny booking
-    Task<Booking> Create(Booking booking);
+    Task<Booking> Save(Booking booking);
 
     // Opdaterer en eksisterende booking
     Task Update(int id, Booking booking);

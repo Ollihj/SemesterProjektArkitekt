@@ -41,7 +41,7 @@ public class BlokeretController : ControllerBase
     [HttpPost]
     public async Task<Blokeret> Create(Blokeret blokeret)
     {
-        return await _repository.Create(blokeret);
+        return await _repository.Save(blokeret);
     }
 
     // Opdaterer en eksisterende blokeret tid

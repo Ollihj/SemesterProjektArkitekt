@@ -41,7 +41,7 @@ public class BookingController : ControllerBase
     [HttpPost]
     public async Task<Booking> Create(Booking booking)
     {
-        return await _repository.Create(booking);
+        return await _repository.Save(booking);
     }
 
     // Opdaterer en eksisterende booking

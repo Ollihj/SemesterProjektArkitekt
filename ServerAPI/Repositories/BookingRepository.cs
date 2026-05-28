@@ -64,7 +64,7 @@ public class BookingRepository : IBookingRepository
     }
 
     // Opretter en ny booking og giver den næste ledige id
-    public async Task<Booking> Create(Booking booking)
+    public async Task<Booking> Save(Booking booking)
     {
         // Henter alle eksisterende bookings for at finde det højeste id
         List<Booking> alleBookings = await _bookings.Find(FilterDefinition<Booking>.Empty).ToListAsync();

@@ -14,7 +14,7 @@ public interface IBlokeretRepository
     Task<List<Blokeret>> GetByBrugerId(int brugerId);
 
     // Opretter en ny blokeret tid
-    Task<Blokeret> Create(Blokeret blokeret);
+    Task<Blokeret> Save(Blokeret blokeret);
 
     // Opdaterer en eksisterende blokeret tid
     Task Update(int id, Blokeret blokeret);

@@ -14,7 +14,7 @@ public interface IAftaleRepository
     Task<List<Aftale>> GetByBrugerId(int brugerId);
 
     // Opretter en ny aftale
-    Task<Aftale> Create(Aftale aftale);
+    Task<Aftale> Save(Aftale aftale);
 
     // Opdaterer en eksisterende aftale
     Task Update(int id, Aftale aftale);
