@@ -145,12 +145,19 @@ public partial class AdminPage
 
         nyMedarbejder.Rolle = "medarbejder";
 
-        if (erRedigeringMedarbejder)
-            medarbejdere = await MedarbejderService.Opdater(nyMedarbejder);
-        else
-            medarbejdere = await MedarbejderService.Opret(nyMedarbejder);
+        try
+        {
+            if (erRedigeringMedarbejder)
+                medarbejdere = await MedarbejderService.Opdater(nyMedarbejder);
+            else
+                medarbejdere = await MedarbejderService.PostBruger(nyMedarbejder);
 
-        LukMedarbejderFormular();
+            LukMedarbejderFormular();
+        }
+        catch
+        {
+            medarbejderFejl = "Noget gik galt. Prøv igen.";
+        }
     }
 
     // Sletter en medarbejder fra databasen baseret på id

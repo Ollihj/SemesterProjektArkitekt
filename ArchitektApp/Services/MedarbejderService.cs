@@ -21,11 +21,12 @@ public class MedarbejderService
         return alle.Where(b => b.Rolle == "medarbejder").ToList();
     }
 
-    // Opretter en ny medarbejder og returnerer den opdaterede liste
-    public async Task<List<Bruger>> Opret(Bruger bruger)
+    // Opretter en ny medarbejder — API returnerer den fulde liste, vi filtrerer medarbejdere ud
+    public async Task<List<Bruger>> PostBruger(Bruger bruger)
     {
-        await _http.PostAsJsonAsync("api/bruger", bruger);
-        return await GetMedarbejdere();
+        var response = await _http.PostAsJsonAsync("api/bruger", bruger);
+        var medarbejderliste = await response.Content.ReadFromJsonAsync<List<Bruger>>() ?? new();
+        return medarbejderliste.Where(b => b.Rolle == "medarbejder").ToList();
     }
 
     // Opdaterer en eksisterende medarbejder og returnerer den opdaterede liste

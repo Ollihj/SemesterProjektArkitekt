@@ -42,8 +42,8 @@ public class BrugerRepository : IBrugerRepository
         return null;
     }
 
-    // Opretter en ny bruger og giver den næste ledige id
-    public async Task<Bruger> Save(Bruger bruger)
+    // Opretter en ny bruger, giver den næste ledige id og returnerer den opdaterede liste
+    public async Task<List<Bruger>> Save(Bruger bruger)
     {
         // Henter alle eksisterende brugere for at finde det højeste id
         List<Bruger> alleBrugere = await _brugere.Find(FilterDefinition<Bruger>.Empty).ToListAsync();
@@ -70,8 +70,8 @@ public class BrugerRepository : IBrugerRepository
 
         // Gemmer den nye bruger i MongoDB
         await _brugere.InsertOneAsync(bruger);
-        // Returnerer den oprettede bruger med det nye id
-        return bruger;
+        // Returnerer den fulde opdaterede liste
+        return await GetAll();
     }
 
     // Opdaterer en eksisterende bruger med nye data

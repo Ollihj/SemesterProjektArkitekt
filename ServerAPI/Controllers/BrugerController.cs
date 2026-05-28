@@ -30,9 +30,9 @@ public class BrugerController : ControllerBase
         return await _repository.GetById(id);
     }
 
-    // Opretter en ny bruger
+    // Opretter en ny bruger og returnerer den opdaterede liste af alle brugere
     [HttpPost]
-    public async Task<Bruger> Create(Bruger bruger)
+    public async Task<List<Bruger>> Create(Bruger bruger)
     {
         return await _repository.Save(bruger);
     }
