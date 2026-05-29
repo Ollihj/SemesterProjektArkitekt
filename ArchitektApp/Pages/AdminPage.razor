@@ -434,6 +434,17 @@
                                     {
                                         <p class="kalender-aftale-beskrivelse">@a.Beskrivelse</p>
                                     }
+                                    @if (a.Type == "booking")
+                                    {
+                                        @if (!string.IsNullOrEmpty(a.Kundemail))
+                                        {
+                                            <p class="kalender-aftale-beskrivelse">✉ @a.Kundemail</p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(a.KundeTlf))
+                                        {
+                                            <p class="kalender-aftale-beskrivelse">📞 @a.KundeTlf</p>
+                                        }
+                                    }
                                 </div>
                                 <button class="admin-knap-fare" @onclick="() => SletAftale(a.Id)">Slet</button>
                             </div>

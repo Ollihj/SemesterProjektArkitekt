@@ -17,5 +17,9 @@ public class Aftale
     // Bruges til at skelne mellem manuelle aftaler og dem der kom fra en booking ("booking")
     public string? Type { get; set; }
 
+    // Udfyldes kun når aftalen er oprettet fra en booking
+    public string? Kundemail { get; set; }
+    public string? KundeTlf { get; set; }
+
     public DateTime Oprettelse { get; set; }
 }
