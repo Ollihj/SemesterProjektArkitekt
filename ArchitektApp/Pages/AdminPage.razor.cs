@@ -349,8 +349,7 @@ public partial class AdminPage
     // Blokerer en hel dag så kunder ikke kan booke den
     private async Task BlokerDag(DateTime dag)
     {
-        var temp = await KalenderService.BlokerDag(adminId, dag);
-        blokereteDatoer.Add(temp);
+        await KalenderService.BlokerDag(adminId, dag);
         blokereteDatoer = await KalenderService.GetBlokereteDatoer();
     }
 

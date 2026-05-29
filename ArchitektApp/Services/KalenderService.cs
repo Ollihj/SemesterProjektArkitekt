@@ -40,7 +40,7 @@ public class KalenderService
 
     // Blokerer en hel dag så kunder ikke kan booke den
     // DateTimeKind.Utc forhindrer MongoDB i at konvertere datoen fra lokal tid og gemme den forkert
-    public async Task<Blokeret> BlokerDag(int brugerId, DateTime dag)
+    public async Task BlokerDag(int brugerId, DateTime dag)
     {
         var utcDato = DateTime.SpecifyKind(dag.Date, DateTimeKind.Utc);
         var blokeret = new Blokeret
@@ -51,7 +51,6 @@ public class KalenderService
             Type = "dag"
         };
         await _http.PostAsJsonAsync("api/blokeret", blokeret);
-        return blokeret;
     }
 
     // Fjerner en blokering så datoen igen er tilgængelig for booking
