@@ -143,6 +143,8 @@ public partial class AdminPage
         if (string.IsNullOrWhiteSpace(nyMedarbejder.Email)) { medarbejderFejl = "Email er påkrævet."; return; }
         if (string.IsNullOrWhiteSpace(nyMedarbejder.Password)) { medarbejderFejl = "Kodeord er påkrævet."; return; }
 
+        nyMedarbejder.Rolle = "medarbejder";
+
         try
         {
             if (erRedigeringMedarbejder)

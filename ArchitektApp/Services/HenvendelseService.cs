@@ -36,8 +36,6 @@ public class HenvendelseService
             SlutTid = DateTime.SpecifyKind(booking.OensketDato.AddHours(1), DateTimeKind.Utc),
             Beskrivelse = booking.Beskrivelse,
             Type = "booking",
-            Kundemail = booking.Kundemail,
-            KundeTlf = booking.KundeTlf,
             Oprettelse = DateTime.UtcNow
         };
 
